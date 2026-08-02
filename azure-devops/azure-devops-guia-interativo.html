@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure DevOps — Guia de Estudo Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0d1b2a;
+  --bg-2: #13273b;
+  --bg-3: #17324a;
+  --panel: #142943;
+  --border: #24425f;
+  --text: #eef2f0;
+  --text-dim: #b9c6d4;
+  --text-faint: #8299ad;
+  --accent: #5ec8f8;
+  --accent-2: #7fe0c1;
+  --warn: #f7b955;
+  --danger: #f26d6d;
+  --quote: #c9a6f7;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);
+  line-height:1.65; font-size:16px;
+}
+a{color:var(--accent);}
+.layout{display:flex; min-height:100vh;}
+
+/* SIDEBAR */
+#sidebar{
+  width:290px; flex-shrink:0; background:var(--bg-2); border-right:1px solid var(--border);
+  position:sticky; top:0; height:100vh; overflow-y:auto; padding:20px 0 40px;
+}
+#sidebar .brand{padding:0 20px 16px; border-bottom:1px solid var(--border); margin-bottom:10px;}
+#sidebar .brand h1{font-size:16px; margin:0 0 4px; color:var(--accent);}
+#sidebar .brand p{font-size:12px; color:var(--text-faint); margin:0;}
+#sidebar nav ul{list-style:none; margin:0; padding:0;}
+#sidebar nav li a{
+  display:block; padding:9px 20px; color:var(--text-dim); text-decoration:none; font-size:13.5px;
+  border-left:3px solid transparent; transition:.15s;
+}
+#sidebar nav li a:hover{background:var(--bg-3); color:var(--text);}
+#sidebar nav li a.active{border-left-color:var(--accent); background:var(--bg-3); color:var(--accent); font-weight:600;}
+#sidebar nav li.sub a{padding-left:36px; font-size:12.5px;}
+#sidebar nav li.chapter a{font-weight:600; color:var(--text); padding-top:12px;}
+#sidebar .progress-note{font-size:11px; color:var(--text-faint); padding:14px 20px 0;}
+
+/* MAIN */
+#main{flex:1; min-width:0; padding:50px 60px 120px; max-width:980px;}
+@media (max-width:900px){
+  #sidebar{position:fixed; left:-300px; z-index:50; transition:.2s; box-shadow:8px 0 30px rgba(0,0,0,.5);}
+  #sidebar.open{left:0;}
+  #main{padding:24px 18px 100px;}
+  #menuToggle{display:flex !important;}
+}
+#menuToggle{
+  display:none; position:fixed; top:14px; left:14px; z-index:60; width:42px;height:42px;
+  background:var(--panel); border:1px solid var(--border); border-radius:8px; color:var(--text);
+  align-items:center; justify-content:center; cursor:pointer; font-size:18px;
+}
+
+h1,h2,h3,h4{font-family:var(--sans); font-weight:600; color:var(--text); letter-spacing:.2px;}
+section.chapter{padding-top:10px; margin-bottom:70px; border-top:1px solid var(--border); padding-top:40px;}
+section.chapter:first-of-type{border-top:none;}
+.chapter-kicker{font-family:var(--mono); font-size:12.5px; color:var(--accent-2); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px;}
+.chapter h2{font-size:30px; margin:0 0 18px; color:#fff;}
+.chapter h3{font-size:21px; margin:34px 0 12px; color:var(--accent);}
+.chapter h4{font-size:16.5px; margin:24px 0 8px; color:var(--text);}
+p{color:var(--text-dim); margin:0 0 14px;}
+strong{color:var(--text); font-weight:600;}
+code, .code-inline{font-family:var(--mono); background:var(--bg-3); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:.9em; color:var(--accent-2);}
+pre{background:#0a1520; border:1px solid var(--border); border-radius:8px; padding:16px 18px; overflow-x:auto; font-family:var(--mono); font-size:13px; color:#d9e6ee; margin:14px 0;}
+ul,ol{color:var(--text-dim); padding-left:22px;}
+li{margin-bottom:6px;}
+
+/* TERM TOOLTIP */
+.term{
+  border-bottom:1px dashed var(--accent-2); cursor:help; color:var(--text); position:relative; font-weight:500;
+}
+.term:hover, .term.open{color:var(--accent-2);}
+.term .tip{
+  display:none; position:absolute; left:0; bottom:calc(100% + 8px); width:290px; max-width:70vw;
+  background:#0a1826; border:1px solid var(--accent-2); border-radius:8px; padding:12px 14px;
+  font-size:12.8px; line-height:1.5; color:var(--text-dim); font-weight:400; z-index:30; box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.term.open .tip{display:block;}
+.term .tip b{color:var(--accent-2); display:block; margin-bottom:4px; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.5px;}
+
+/* BLOCKS */
+.block{border-radius:10px; padding:16px 20px; margin:20px 0; border-left:4px solid; background:var(--panel);}
+.block .block-label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:1.2px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.block p:last-child{margin-bottom:0;}
+.block.analogy{border-color:var(--accent-2); background:linear-gradient(135deg, rgba(127,224,193,.08), var(--panel));}
+.block.analogy .block-label{color:var(--accent-2);}
+.block.info{border-color:var(--accent); background:linear-gradient(135deg, rgba(94,200,248,.08), var(--panel));}
+.block.info .block-label{color:var(--accent);}
+.block.warn{border-color:var(--warn); background:linear-gradient(135deg, rgba(247,185,85,.08), var(--panel));}
+.block.warn .block-label{color:var(--warn);}
+.block.quote{border-color:var(--quote); background:linear-gradient(135deg, rgba(201,166,247,.08), var(--panel)); font-style:italic;}
+.block.quote .block-label{color:var(--quote);}
+.block.exercise{border-color:#6fb3ff; background:var(--bg-3); counter-increment: ex;}
+.block.exercise .block-label{color:#6fb3ff;}
+
+/* SIMULATOR SHELL */
+.sim{background:#0a1826; border:1px solid var(--border); border-radius:12px; padding:22px; margin:22px 0;}
+.sim-title{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.sim-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-2);}
+
+/* GLOSSARY */
+#glossario dl{display:grid; gap:14px;}
+#glossario dt{font-family:var(--mono); color:var(--accent-2); font-weight:600; font-size:14.5px;}
+#glossario dd{margin:4px 0 0; color:var(--text-dim); font-size:14px;}
+
+/* TOC top */
+.toc-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; margin:18px 0 30px;}
+.toc-grid a{color:var(--text-dim); text-decoration:none; font-size:14px; padding:6px 0; border-bottom:1px solid var(--border); display:block;}
+.toc-grid a:hover{color:var(--accent);}
+@media (max-width:640px){.toc-grid{grid-template-columns:1fr;}}
+
+footer{color:var(--text-faint); font-size:12.5px; padding:40px 0 10px; border-top:1px solid var(--border); margin-top:60px;}
+.badge{display:inline-block; font-family:var(--mono); font-size:10.5px; padding:2px 8px; border-radius:20px; border:1px solid var(--border); color:var(--text-faint); margin-right:6px;}
+</style>
+</head>
+<body>
+<div id="menuToggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</div>
+<div class="layout">
+<aside id="sidebar">
+  <div class="brand">
+    <h1>Azure DevOps</h1>
+    <p>Guia de estudo interativo — versão condomínio</p>
+  </div>
+  <nav>
+    <ul id="navlist">
+      <li><a href="#intro">Início</a></li>
+      <li class="chapter"><a href="#cap1">Cap. 1 — O que é DevOps?</a></li>
+      <li class="chapter"><a href="#cap2">Cap. 2 — Configurando o Azure DevOps</a></li>
+      <li class="chapter"><a href="#cap3">Cap. 3 — Boards</a></li>
+      <li class="chapter"><a href="#cap4">Cap. 4 — Repositórios (Repos)</a></li>
+      <li class="chapter"><a href="#cap5">Cap. 5 — Build Pipelines</a></li>
+      <li class="chapter"><a href="#cap6">Cap. 6 — Release Pipelines</a></li>
+      <li class="chapter"><a href="#cap7">Cap. 7 — Test Plans</a></li>
+      <li class="chapter"><a href="#cap8">Cap. 8 — Artifacts</a></li>
+      <li class="chapter"><a href="#glossario">Glossário</a></li>
+    </ul>
+  </nav>
+  <p class="progress-note">Fonte: <em>Azure DevOps Succinctly</em> (Sander Rossel, Syncfusion) + slides "Azure DevOps" (Hans-Petter Halvorsen). Conteúdo reescrito e reorganizado; não é cópia literal.</p>
+</aside>
+<main id="main">
+<section id="intro" class="chapter">
+  <div class="chapter-kicker">Guia de estudo</div>
+  <h2>Azure DevOps — do conceito à prática</h2>
+  <p>Este material transforma o livro <em>Azure DevOps Succinctly</em> (Sander Rossel, editora Syncfusion) e os slides de apoio de Hans-Petter Halvorsen em um guia único, visual e interativo. A ideia central que vai te acompanhar do início ao fim é a seguinte:</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 Analogia-mãe: o condomínio</div>
+    <p>Pense no <span class="term">Azure DevOps<span class="tip"><b>Azure DevOps</b>Plataforma da Microsoft (nuvem — "Azure") para gestão de todo o ciclo de vida de desenvolvimento de software ("DevOps"). Endereço: dev.azure.com.</span></span> como a <strong>administração de um condomínio de edifícios</strong>. A <span class="term">organização<span class="tip"><b>Organização (Organization)</b>Nível mais alto do Azure DevOps. Reúne usuários, projetos e configurações de cobrança. Tem uma URL própria: dev.azure.com/[nome-da-organização].</span></span> é o próprio condomínio — o terreno, o CNPJ, a administração central. Cada <span class="term">projeto<span class="tip"><b>Projeto (Project)</b>Unidade de trabalho dentro de uma organização. Cada projeto tem seu próprio quadro de tarefas, repositórios de código, pipelines, planos de teste e pacotes.</span></span> é um <strong>edifício</strong> dentro desse condomínio — a Torre A pode ser o sistema de ERP, a Torre B o aplicativo de vendas. Dentro de cada torre, os cinco "departamentos" do condomínio — Boards, Repos, Pipelines, Test Plans e Artifacts — são o <strong>quadro de avisos do síndico</strong>, o <strong>depósito central de plantas e documentos</strong>, a <strong>portaria automatizada que libera entregas</strong>, a <strong>vistoria de qualidade</strong> e o <strong>almoxarifado de materiais reaproveitáveis</strong>. Essa analogia vai reaparecer em cada capítulo.</p>
+  </div>
+
+  <p><strong>Nível de profundidade:</strong> técnico, para quem já atua com governança de TI e infraestrutura, mas está começando a explorar ferramentas de DevOps na prática. <strong>Idioma:</strong> português do Brasil, com todo termo técnico em inglês explicado na primeira ocorrência (e disponível ao passar/tocar sobre o termo sublinhado).</p>
+
+  <div class="toc-grid">
+    <a href="#cap1">1. O que é DevOps?</a>
+    <a href="#cap5">5. Build Pipelines</a>
+    <a href="#cap2">2. Configurando o Azure DevOps</a>
+    <a href="#cap6">6. Release Pipelines</a>
+    <a href="#cap3">3. Boards</a>
+    <a href="#cap7">7. Test Plans</a>
+    <a href="#cap4">4. Repositórios (Repos)</a>
+    <a href="#cap8">8. Artifacts</a>
+  </div>
+</section>
+
+<section id="cap1" class="chapter">
+  <div class="chapter-kicker">Capítulo 1</div>
+  <h2>O que é DevOps?</h2>
+
+  <p><span class="term">DevOps<span class="tip"><b>DevOps</b>Junção de "Development" (desenvolvimento) e "Operations" (operações). Conjunto de práticas que aproxima quem escreve código de quem mantém a infraestrutura rodando, com o objetivo de entregar software confiável em ritmo rápido e constante.</span></span> nasceu como resposta a um problema muito concreto: equipes de desenvolvimento, teste e operações que trabalhavam isoladas, jogando o trabalho "por cima do muro" umas para as outras, cada uma com metas conflitantes — devs queriam entregar rápido, testadores queriam achar o máximo de defeitos, operações queria o máximo de estabilidade (e toda atualização é risco de queda). O resultado histórico: software cheio de bugs, atrasado, e equipes frustradas culpando-se mutuamente.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>Imagine um condomínio antigo onde o pedreiro constrói, o síndico só aprova depois de pronto, e o zelador só recebe a chave no fim — sem conversar entre si durante a obra. Se algo desanda, cada um culpa o outro. DevOps é trocar isso por uma <strong>equipe única e multidisciplinar</strong> que já nasce responsável pelo edifício inteiro, do projeto à entrega das chaves — dividindo o mesmo painel de metas.</p>
+  </div>
+
+  <h3>Um pouco de história</h3>
+  <p>O termo foi cunhado há mais de uma década. A primeira conferência dedicada ao tema, a <em>devopsdays</em>, aconteceu em Ghent, na Bélgica, em 2009. O primeiro relatório "State of DevOps" saiu em 2012, e desde 2014 passou a ser publicado anualmente, período em que a adoção do DevOps acelerou fortemente. Tecnologias como <span class="term">virtualização<span class="tip"><b>Virtualização</b>Técnica que permite rodar múltiplos ambientes de computador (máquinas virtuais) isolados sobre um único hardware físico.</span></span>, nuvem e <span class="term">containerização<span class="tip"><b>Containerização</b>Empacotar uma aplicação com tudo o que ela precisa para rodar (bibliotecas, configurações) em uma unidade isolada e portátil, chamada container.</span></span> mudaram as expectativas: tudo precisa funcionar sem downtime (tempo fora do ar) e sob demanda.</p>
+
+  <h3>Os fundamentos do DevOps</h3>
+  <p>Apesar de a conversa girar em torno de ferramentas, DevOps é, na essência, <strong>cultura organizacional</strong>. Times deixam de ser definidos pelo tipo de trabalho que fazem (um time só de devs, outro só de testadores) e passam a ser definidos pelo resultado que entregam — um mesmo time reúne desenvolvedor, testador, <span class="term">Scrum Master<span class="tip"><b>Scrum Master</b>Papel dentro do Scrum responsável por remover obstáculos do time e garantir que o processo ágil seja seguido.</span></span>, <span class="term">product owner<span class="tip"><b>Product Owner (PO)</b>Pessoa responsável por priorizar o que deve ser feito, representando a voz do negócio/cliente perante o time técnico.</span></span>, analista de negócio, administrador de sistemas e engenheiro de segurança.</p>
+
+  <p>A adoção de metodologias <span class="term">ágeis<span class="tip"><b>Metodologias ágeis (Agile)</b>Conjunto de práticas de gestão de projeto baseadas em ciclos curtos e entregas incrementais, em contraste com o modelo tradicional "Cascata" (Waterfall), onde tudo é planejado no início e entregue só no fim.</span></span>, como o <span class="term">Scrum<span class="tip"><b>Scrum</b>Framework ágil onde times pequenos (4 a 7 pessoas) trabalham em ciclos curtos chamados sprints, com reuniões diárias curtas para acompanhar o progresso.</span></span>, ajuda a acelerar ainda mais essa entrega. A ideia central do Scrum: times pequenos trabalham em <span class="term">sprints<span class="tip"><b>Sprint</b>Período fixo de trabalho (normalmente 2 a 3 semanas) no qual um conjunto de tarefas planejadas deve ser concluído e, idealmente, entregue.</span></span> de duas a três semanas, com uma reunião diária curta (Daily Scrum) para alinhar o progresso. Periodicamente, o time olha os itens pendentes do <span class="term">backlog<span class="tip"><b>Backlog</b>Lista de tudo o que precisa ser feito no projeto, priorizada e ainda não realizada.</span></span>, estima o esforço necessário e o product owner ordena por prioridade — assim o time sabe quanto trabalho cabe no próximo sprint. Ao final de cada sprint, há uma retrospectiva: o que funcionou, o que pode melhorar.</p>
+
+  <div class="sim" id="sim-scrum">
+    <div class="sim-title"><span class="dot"></span> Simulador — O ciclo do Scrum</div>
+    <div id="scrumStepper"></div>
+  </div>
+
+  <h4>Automação: a palavra-chave técnica</h4>
+  <p>Quando desenvolvedores e administradores de sistemas trabalham juntos, o código pode passar a ser entregue automaticamente. Ferramentas como o próprio Azure DevOps, GitHub, GitLab, Jenkins e Bamboo cumprem esse papel. O fluxo típico:</p>
+  <ol>
+    <li>O código é enviado (<em>commit</em>) para o controle de versão <span class="term">Git<span class="tip"><b>Git</b>Sistema de controle de versão distribuído — cada desenvolvedor tem uma cópia completa do histórico do código. Padrão de fato da indústria.</span></span>.</li>
+    <li>Um <em>build</em> (compilação/montagem) é disparado automaticamente no servidor.</li>
+    <li>Se o build passa, o código é testado automaticamente com os testes unitários escritos pela equipe.</li>
+    <li>Passando nos testes, o código é implantado (<em>deploy</em>) em um ambiente de homologação (<em>staging</em>) para testes manuais de aceitação.</li>
+    <li>Aprovado, o código pode ser implantado em produção com um clique — e pouco ou nenhum downtime.</li>
+  </ol>
+
+  <p>Esse processo de compilar e testar automaticamente chama-se <span class="term">Integração Contínua<span class="tip"><b>Integração Contínua (Continuous Integration, CI)</b>Prática de compilar e testar automaticamente o código a cada alteração enviada ao repositório, detectando problemas cedo.</span></span> (<span class="code-inline">CI</span>). O deploy automático depois disso é <span class="term">Entrega Contínua<span class="tip"><b>Entrega Contínua (Continuous Delivery)</b>Automatizar o deploy até um ambiente de pré-produção, deixando o software sempre pronto para ir a produção — a liberação final ainda pode ser manual.</span></span> (também abreviada <span class="code-inline">CD</span>). Se absolutamente todos os passos manuais forem eliminados e o código vai do commit direto à produção, fala-se em <span class="term">Implantação Contínua<span class="tip"><b>Implantação Contínua (Continuous Deployment)</b>Variante mais radical da entrega contínua: nenhuma etapa manual — o código aprovado nos testes vai para produção sozinho.</span></span>. Na prática, o termo genérico <span class="term">CI/CD<span class="tip"><b>CI/CD</b>Sigla que junta Integração Contínua e Entrega/Implantação Contínua — o conjunto completo de automação entre escrever código e colocá-lo em produção.</span></span> é usado quase como sinônimo de DevOps.</p>
+
+  <h4>O papel da nuvem</h4>
+  <p>Com a popularização da <span class="term">computação em nuvem<span class="tip"><b>Nuvem (Cloud computing)</b>Modelo de fornecimento de infraestrutura e serviços de TI via internet, sob demanda, sem necessidade de hardware próprio.</span></span>, o DevOps — e especialmente o CI/CD — ficou muito mais fácil de praticar: recursos inteiros podem ser criados a partir de um script (<span class="term">JSON<span class="tip"><b>JSON (JavaScript Object Notation)</b>Formato leve de texto para representar dados estruturados, muito usado em configurações e comunicação entre sistemas.</span></span>, <span class="term">PowerShell<span class="tip"><b>PowerShell</b>Linguagem de linha de comando e automação da Microsoft, usada para gerenciar sistemas Windows e recursos Azure.</span></span> ou <span class="term">CLI<span class="tip"><b>CLI (Command-Line Interface)</b>Interface de linha de comando — forma de interagir com um sistema digitando comandos de texto, em vez de clicar em uma interface gráfica.</span></span>), sem intervenção manual. O próprio Azure DevOps é uma solução em nuvem, sucessora do antigo <span class="term">Team Foundation Server (TFS)<span class="tip"><b>TFS (Team Foundation Server)</b>Antecessor on-premises (instalado localmente) do Azure DevOps, hoje renomeado para Azure DevOps Server.</span></span>, que rodava localmente ("on-premises").</p>
+
+  <p>Nuvem e DevOps juntos também abriram espaço para um novo padrão arquitetural: <span class="term">microsserviços<span class="tip"><b>Microsserviços (Microservices)</b>Padrão de arquitetura onde uma aplicação grande é dividida em subsistemas menores e independentes, cada um com seu próprio banco de dados, que se comunicam entre si.</span></span>. Em vez de uma aplicação única e monolítica, o sistema é dividido em módulos independentes (ex.: módulo de produtos, de vendas, de estoque, financeiro), cada um escalável e substituível separadamente. A vantagem é a escalabilidade e a resiliência (se um módulo cai, os outros continuam); a desvantagem é a multiplicação de implantações — o que só se torna administrável com CI/CD bem automatizado. Ferramentas de containerização como <span class="term">Docker<span class="tip"><b>Docker</b>Ferramenta que empacota aplicações em containers — ambientes isolados e portáteis que rodam de forma consistente em qualquer máquina.</span></span> e <span class="term">Kubernetes<span class="tip"><b>Kubernetes</b>Sistema de orquestração de containers: gerencia automaticamente onde e como containers são executados, escalados e recuperados em caso de falha.</span></span> ajudam a administrar esse cenário mais complexo.</p>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Cultura não é só rótulo</div>
+    <p>Chamar-se de "Ágil" enquanto a operação continua desorganizada, ou dizer que "faz DevOps" só porque existe um pipeline de CI rodando, <strong>não é DevOps</strong>. A mudança real está na cultura: times multifuncionais assumem <strong>responsabilidade compartilhada</strong> pelo código e pelo ambiente. Quando um bug aparece em produção, o objetivo não é apontar culpados — é resolver o problema o quanto antes, seja qual for a origem. Esse mesmo espírito colaborativo, sem cultura de "nomear e envergonhar", deve se estender também a usuários e à gestão, que participam do processo de desenvolvimento desde cedo.</p>
+  </div>
+
+  <h3>Onde o Azure DevOps entra nisso tudo</h3>
+  <p>O Azure DevOps é a caixa de ferramentas que dá suporte técnico à cultura DevOps. Ele reúne cinco grandes áreas, que serão o roteiro do restante deste guia:</p>
+  <ul>
+    <li><strong>Boards</strong> — times criam e priorizam histórias de usuário, estimam esforço e planejam sprints.</li>
+    <li><strong>Repos</strong> — código-fonte sob controle de versão Git, vinculado a itens de trabalho, com revisão de código obrigatória.</li>
+    <li><strong>Pipelines</strong> — automação de build e release (CI/CD); o código pode vir do próprio Azure Repos, do <span class="term">GitHub<span class="tip"><b>GitHub</b>Plataforma de hospedagem de código baseada em Git, hoje também propriedade da Microsoft.</span></span>, do Bitbucket Cloud ou de outros; suporta praticamente qualquer linguagem (.NET, Java, Go, JavaScript, Python, entre outras) e sistemas operacionais (Windows, Ubuntu, macOS).</li>
+    <li><strong>Test Plans</strong> — testadores criam, executam e documentam planos de teste manuais.</li>
+    <li><strong>Artifacts</strong> — pacotes de software reutilizáveis, com suporte a gerenciadores como <span class="term">NuGet<span class="tip"><b>NuGet</b>Gerenciador de pacotes para o ecossistema .NET — permite reutilizar bibliotecas de código já compiladas.</span></span>, <span class="term">npm<span class="tip"><b>npm (Node Package Manager)</b>Gerenciador de pacotes padrão do ecossistema JavaScript/Node.js.</span></span>, <span class="term">Maven<span class="tip"><b>Maven</b>Ferramenta de build e gerenciamento de dependências para projetos Java.</span></span> e <span class="term">pip<span class="tip"><b>pip</b>Gerenciador de pacotes padrão da linguagem Python.</span></span>.</li>
+  </ul>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>DevOps é, antes de tudo, um jeito de trabalhar: colaboração entre times antes separados, entregando software confiável em ritmo previsível. O Azure DevOps entrega o "pacote completo" — planejamento, controle de versão, automação de build/release e gestão de testes — em um único produto, enquanto ferramentas concorrentes normalmente cobrem só uma ou duas dessas frentes.</p>
+  </div>
+</section>
+<section id="cap2" class="chapter">
+  <div class="chapter-kicker">Capítulo 2</div>
+  <h2>Configurando o Azure DevOps</h2>
+
+  <p>Antes de usar o Azure DevOps é preciso montar a base: uma <span class="term">conta Microsoft<span class="tip"><b>Conta Microsoft</b>Identidade usada para acessar serviços da Microsoft (Outlook, Azure, Azure DevOps, etc).</span></span>, um <span class="term">tenant do Azure<span class="tip"><b>Tenant (Azure Active Directory)</b>Um "container" que reúne usuários, contas e assinaturas de uma organização dentro do Azure. É a identidade corporativa/organizacional na nuvem da Microsoft.</span></span>, uma assinatura e, por fim, a organização e o projeto dentro do Azure DevOps propriamente dito. O Azure e o Azure DevOps são gratuitos para começar, mas a criação da conta Azure exige um cartão de crédito (mesmo em contas que nunca chegam a ser cobradas).</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>Criar o <strong>tenant do Azure Active Directory</strong> é como abrir o <strong>CNPJ da administradora</strong> que vai tocar o condomínio — é o "documento-mãe" que identifica juridicamente todo mundo que mora ali. A <strong>assinatura (subscription)</strong> é a conta bancária vinculada a esse CNPJ, de onde saem os pagamentos dos serviços contratados (água, luz, portaria). A <strong>organização do Azure DevOps</strong> é o próprio condomínio erguido sobre esse CNPJ, e cada <strong>projeto</strong> é um edifício dentro dele.</p>
+  </div>
+
+  <h3>Criando uma conta Microsoft e um tenant do Azure</h3>
+  <p>O processo de cadastro passa por criar (ou reaproveitar) uma conta Microsoft — inclusive é possível entrar com uma conta pessoal do GitHub — e, em seguida, criar um <span class="term">Azure Active Directory (Azure AD / AAD)<span class="tip"><b>Azure Active Directory (Azure AD ou AAD)</b>Serviço de identidade e gerenciamento de acesso da Microsoft. É o coração da conta Azure: nele ficam os usuários, o nome e o ID do tenant.</span></span>. O plano gratuito de teste do Azure libera alguns serviços populares (como 5 GB de armazenamento) e um crédito inicial em dinheiro para usar em serviços pagos por um tempo limitado. Um ponto importante: o Azure cobra por uso — se uma máquina virtual custaria R$500/mês mas você a apaga na metade do mês, paga só R$250.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Cobrança e sempre-gratuitos</div>
+    <p>Alguns recursos do Azure são sempre gratuitos, independente de plano: ofertas <em>serverless</em> (sem servidor dedicado), a camada gratuita do App Service e o próprio Azure Active Directory.</p>
+  </div>
+
+  <h4>Azure Active Directory</h4>
+  <p>É no Azure AD que fica o nome e o ID do tenant, além da lista de usuários (os mesmos que depois serão adicionados no Azure DevOps). O nome padrão do diretório pode ser alterado nas Propriedades — útil porque, se o cadastro foi feito com uma conta Outlook, o nome inicial do tenant costuma ser algo pouco amigável, do tipo <code>seuemail_outlook_numero.onmicrosoft.com</code>.</p>
+
+  <h3>Criando a conta e a organização no Azure DevOps</h3>
+  <p>Com a conta Microsoft já vinculada ao Azure, criar a conta do Azure DevOps é rápido — o sistema pede apenas confirmação de país e algumas preferências. Você chega então à sua <strong>organização padrão</strong> (nomeada automaticamente com base no seu e-mail), e a partir dali pode criar um <strong>projeto</strong>: nome, descrição, visibilidade (pública ou privada) e, nas configurações avançadas, o tipo de controle de versão e o <span class="term">processo de item de trabalho<span class="tip"><b>Processo de item de trabalho (Work item process)</b>Template que define quais tipos de cartão de tarefa (épico, história, bug, etc.) e quais colunas de fluxo o projeto vai usar: Basic, Agile, Scrum ou CMMI.</span></span> (Basic, Agile, Scrum ou <span class="term">CMMI<span class="tip"><b>CMMI (Capability Maturity Model Integration)</b>Modelo de maturidade de processos mais formal e burocrático, com tipos de item de trabalho adicionais; pouco usado fora de ambientes muito regulados.</span></span>).</p>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Git vs. TFVC</div>
+    <p>Nas configurações avançadas do projeto, o controle de versão pode ser <strong>Git</strong> ou <strong>Team Foundation Version Control (TFVC)</strong>. O TFVC é um sistema centralizado mais antigo; desde agosto de 2024 ele nem sequer é mais oferecido para novos projetos, como reforça um dos slides do material de apoio. O Git — sistema <span class="term">distribuído<span class="tip"><b>Controle de versão distribuído</b>Modelo em que cada desenvolvedor tem uma cópia completa do histórico do repositório em sua própria máquina, ao contrário do modelo centralizado, onde só o servidor guarda o histórico completo.</span></b></span> — é hoje o padrão de fato da indústria e é a escolha recomendada, salvo necessidade específica.</p>
+  </div>
+
+  <h4>Passo a passo prático — criar um novo projeto (conforme os slides)</h4>
+  <ol>
+    <li>Acesse <code>https://dev.azure.com</code> e clique em <strong>Create a project to get started</strong>.</li>
+    <li>Preencha um <strong>Name</strong> (nome) e uma <strong>Description</strong> (descrição) significativos.</li>
+    <li>Em <strong>Advanced</strong>, defina <strong>Version control = Git</strong> e <strong>Work item process = Scrum</strong>.</li>
+    <li>Clique em <strong>Create project</strong>.</li>
+  </ol>
+
+  <h3>Organizando projetos: um ou muitos?</h3>
+  <p>Cada organização pode ter vários projetos, e cada projeto pode ter vários <span class="term">repositórios<span class="tip"><b>Repositório (Repository)</b>Local onde o código-fonte de uma aplicação é armazenado e versionado com Git.</span></span> e <span class="term">boards<span class="tip"><b>Board</b>Quadro visual (estilo Kanban) para acompanhar itens de trabalho em colunas de status.</span></span>. Não existe uma regra fixa: equipes com múltiplos clientes costumam separar por cliente; equipes com sistemas relacionados (ex.: ERP e CRM que compartilham serviços) podem optar por projetos separados com um projeto extra só para os serviços compartilhados, ou manter tudo em um único projeto com múltiplos repositórios. A decisão depende de como as equipes e o acesso de usuários estão organizados.</p>
+
+  <h3>Gestão de usuários e níveis de acesso</h3>
+  <p>Usuários são adicionados nas configurações da organização. Existem três níveis de acesso:</p>
+  <ul>
+    <li><strong>Basic</strong> — acesso completo a Boards, Repos e Pipelines. Cada organização tem direito a <strong>5 usuários Basic gratuitos</strong>; usuários adicionais são cobrados por mês.</li>
+    <li><strong>Stakeholder</strong> — acesso sempre gratuito e ilimitado, mas limitado: acesso completo a Pipelines, nenhum acesso a Repos e acesso restrito a Boards.</li>
+    <li><strong>Visual Studio Subscriber</strong> — quem já paga uma assinatura profissional/enterprise do Visual Studio tem acesso completo sem ocupar uma vaga gratuita.</li>
+  </ul>
+  <p>Além do nível de acesso à organização, cada usuário pode ser adicionado a um grupo dentro de um projeto específico: <strong>Readers</strong> (leitores), <strong>Contributors</strong> (contribuidores) ou <strong>Administrators</strong> (administradores). Como reforçam os slides, adicionar alguém apenas pela tela de convite do projeto costuma dar só acesso de leitura ("Stakeholder"); para dar acesso administrativo completo é necessário ir em <strong>Organization Settings → Users → Add users</strong>, definindo o <strong>Access level</strong> como <strong>Basic</strong> e marcando o projeto correto.</p>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Cuidado com o papel de administrador</div>
+    <p>Um <span class="term">Project Collection Administrator<span class="tip"><b>Project Collection Administrator</b>Papel com poder total sobre toda a organização do Azure DevOps: pode alterar usuários, permissões, conectar/desconectar o Azure AD e até remover outros administradores.</span></span> tem poder irrestrito sobre a organização inteira — incluindo a capacidade de remover outros administradores. Atribua esse papel com extremo cuidado.</p>
+  </div>
+
+  <h3>Faturamento (Billing)</h3>
+  <p>Além dos 5 usuários gratuitos, o plano gratuito inclui <strong>1.800 minutos (30 horas) de build por mês</strong> e <strong>um agente hospedado por vez</strong> — ou seja, jobs de build/release rodam em fila, um de cada vez. Para aumentar usuários, minutos de build ou jobs paralelos, é preciso vincular uma assinatura Azure com faturamento habilitado. A cobrança é diária: adicionar e remover um usuário no meio do mês cobra apenas os dias de uso.</p>
+
+  <h3>Conectando o Azure Active Directory</h3>
+  <p>Conectar a organização do Azure DevOps a um Azure AD centraliza a gestão de usuários (as permissões específicas do Azure DevOps continuam sendo atribuídas separadamente). É um processo que pode gerar friç­ões — usuários que não pertencem ainda ao mesmo Azure AD perdem acesso temporariamente e precisam ser reconectados manualmente ou via convite.</p>
+
+  <h3>Configurações do projeto</h3>
+  <p>Em <strong>Project Settings</strong> é possível renomear o projeto, mudar sua visibilidade, ativar/desativar serviços específicos (por exemplo, desligar Test Plans se a equipe não usa), adicionar administradores extras e excluir o projeto. Também é ali que se configuram <span class="term">service hooks<span class="tip"><b>Service hooks</b>Integrações que notificam serviços externos (Slack, por exemplo) quando eventos específicos ocorrem no projeto, como um push de código ou a atualização de um item de trabalho.</span></span>, dashboards com widgets (como gráficos de burndown) e uma wiki para documentação interna.</p>
+
+  <h3>Segurança e permissões</h3>
+  <p>Em <strong>Organization Settings → Security</strong> encontram-se <strong>Policies</strong> (políticas gerais, como proibir projetos públicos) e <strong>Permissions</strong> (grupos e usuários). Os grupos padrão mais importantes são <strong>Project Collection Valid Users</strong> (o grupo mais amplo — todo mundo pertence a ele) e <strong>Project Collection Administrators</strong> (acesso total). A recomendação geral é não editar os grupos internos e, se necessário, criar grupos novos herdando as permissões desejadas.</p>
+
+  <div class="block exercise">
+    <div class="block-label">📝 Bons hábitos ao configurar</div>
+    <p>Mudar o nome da organização muda também a URL de tudo (<code>dev.azure.com/[nome]</code>) — repositórios, feeds de pacotes, documentação e favoritos salvos por toda a equipe precisam ser atualizados. Planeje esse tipo de mudança com antecedência e, se possível, faça-a antes de o ambiente ter projetos em produção.</p>
+  </div>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>O Azure DevOps oferece controle detalhado sobre organização, projetos, usuários e permissões. A conexão com o Azure Active Directory centraliza a identidade dos usuários, e a assinatura Azure cuida do faturamento de recursos extras. Times de qualquer tamanho podem moldar essa estrutura conforme sua realidade.</p>
+  </div>
+</section>
+<section id="cap3" class="chapter">
+  <div class="chapter-kicker">Capítulo 3</div>
+  <h2>Boards</h2>
+
+  <p>Todo projeto do Azure DevOps nasce com um quadro <span class="term">Kanban<span class="tip"><b>Kanban</b>Método visual de gestão de fluxo de trabalho, com colunas representando estágios (ex.: A Fazer, Em Progresso, Feito) e cartões que se movem entre elas.</span></span> padrão. O Boards é onde o trabalho é planejado, priorizado, estimado e acompanhado.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>O <strong>Boards</strong> é o <strong>quadro de avisos e o livro de obras do síndico</strong>: toda reforma grande (um <em>épico</em>) é dividida em pedidos de serviço (<em>issues/histórias</em>), e cada pedido de serviço em tarefas concretas para o zelador ou empreiteiro (<em>tasks</em>) — "trocar a fiação do 3º andar", "pintar a fachada". O quadro físico na portaria, com colunas "A Fazer / Em Andamento / Concluído", é exatamente o quadro Kanban do board.</p>
+  </div>
+
+  <h3>Terminologia essencial</h3>
+  <p>Um <span class="term">item de trabalho<span class="tip"><b>Item de trabalho (Work item)</b>Unidade básica de planejamento no Azure Boards: pode ser um épico, uma história/issue, uma tarefa, um bug etc., dependendo do processo escolhido.</span></span> é qualquer "cartão" no board. Um <span class="term">backlog<span class="tip"><b>Backlog</b>Lista priorizada de tudo o que ainda precisa ser feito no projeto.</span></span> é simplesmente uma lista do que falta fazer, geralmente escrita por gerentes de projeto, product owners e/ou analistas de negócio. O esforço necessário para cada item costuma ser <span class="term">estimado<span class="tip"><b>Estimativa (Estimating)</b>Processo de atribuir um valor relativo de esforço a um item de trabalho, geralmente usando a sequência de Fibonacci (1, 2, 3, 5, 8...) ou tamanhos de camiseta (P, M, G).</span></span> usando pontos da sequência de <span class="term">Fibonacci<span class="tip"><b>Sequência de Fibonacci</b>Sequência numérica onde cada número é a soma dos dois anteriores (0, 1, 1, 2, 3, 5, 8...), usada como escala relativa de esforço em estimativas ágeis — evita comparação direta com horas.</span></span> (1, 2, 3, 5, 8…) ou "tamanhos de camiseta" (PP, P, M, G, GG). O importante é que a estimativa seja <strong>relativa</strong> a um item de referência, não uma contagem literal de horas — embora, na prática, muitas equipes acabem usando horas de qualquer jeito.</p>
+
+  <p>Um <span class="term">sprint<span class="tip"><b>Sprint</b>Ciclo fixo de trabalho, geralmente 2–3 semanas, no qual um conjunto planejado de itens deve ser concluído.</span></span> é o período (normalmente 2–3 semanas) em que um conjunto de itens do backlog deve ser concluído e, idealmente, entregue. Uma vez planejado, o sprint costuma ser tratado como compromisso — mudanças de prioridade no meio do caminho geram estresse e prejudicam a previsibilidade da equipe.</p>
+
+  <h3>Os três processos: Basic, Agile e Scrum</h3>
+  <p>O Azure DevOps oferece quatro "processos" (templates de item de trabalho) — <strong>Basic</strong>, <strong>Agile</strong>, <strong>Scrum</strong> e <strong>CMMI</strong> (este último fora do escopo deste guia). Cada um define uma hierarquia diferente de tipos de item:</p>
+
+  <div class="sim" id="sim-hierarchy">
+    <div class="sim-title"><span class="dot"></span> Simulador — Hierarquia de itens de trabalho por processo</div>
+    <div id="hierarchySim"></div>
+  </div>
+
+  <h4>Processo Basic</h4>
+  <p>O mais simples: <strong>Epic → Issue → Task</strong>. Um épico (<em>epic</em>) contém issues; uma issue contém tasks. Exemplo: "adicionar uma loja virtual ao produto" pode ser um épico; dentro dele, issues como "criar página de busca de produtos"; dentro da issue, tasks como "adicionar link para a loja na home".</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Nota de terminologia</div>
+    <p>O termo <em>epic</em> vem do vocabulário ágil tradicional, onde originalmente significava "duas ou mais histórias de usuário juntas" — o sentido meio que se inverteu ao longo do tempo, e hoje "épico" é a unidade maior, não a soma de histórias menores.</p>
+  </div>
+
+  <h4>Processo Agile</h4>
+  <p>Hierarquia: <strong>Epic → Feature → User Story → Task</strong> (com Bugs e Tests também associados à User Story). O que era "issue" no processo Basic vira "user story" aqui. Existe ainda um tipo <strong>Issue</strong> separado no processo Agile, com um significado diferente: um bloqueio a um trabalho planejado ou a um release — por exemplo, "capacidade do servidor insuficiente para a nova carga esperada da loja virtual". Issues não aparecem automaticamente no backlog nem no board; para vê-las é preciso criar uma <span class="term">query<span class="tip"><b>Query</b>Filtro salvo sobre os itens de trabalho — por exemplo, "tudo que está atribuído a mim" ou "issues ainda não resolvidas".</span></span>.</p>
+
+  <h4>Processo Scrum</h4>
+  <p>Hierarquia: <strong>Epic → Feature → Product Backlog Item (PBI) → Task</strong>, com <strong>Impediment</strong> no lugar de Issue. A diferença mais notável: no Scrum, bugs ganham cartão próprio e aparecem no backlog e no board (no Agile, bugs ficam "dentro" das tasks, sem cartão visível separado).</p>
+
+  <div class="sim" id="sim-backlog">
+    <div class="sim-title"><span class="dot"></span> Simulador — Feature → Product Backlog Item → Task</div>
+    <div id="backlogTreeSim"></div>
+  </div>
+
+  <h3>O quadro (Board) e o backlog</h3>
+  <p>O board tradicional tem três colunas: <strong>To Do</strong> (a fazer), <strong>Doing</strong> ou <strong>In Progress</strong> (em andamento) e <strong>Done</strong> (concluído) — mas equipes frequentemente adicionam colunas como <em>Test</em> ou <em>Deployed</em>. Um cartão é arrastado entre colunas conforme o status muda. Uma boa prática citada no livro: cada desenvolvedor deveria trabalhar em, no máximo, um item por vez — o board costuma mostrar algo como "1/5" indicando quantas pessoas (de um limite configurado) estão numa coluna.</p>
+
+  <div class="sim" id="sim-kanban">
+    <div class="sim-title"><span class="dot"></span> Simulador — Quadro Kanban (arraste os cartões)</div>
+    <div id="kanbanSim"></div>
+  </div>
+
+  <p>Dentro de um cartão é possível abrir uma discussão, mencionar colegas com <code>@nome</code> (que recebem um e-mail) e vincular outros itens com <code>#</code> ou pull requests com <code>!</code>.</p>
+
+  <h3>Customizando o board</h3>
+  <p>É possível personalizar quais campos aparecem nos cartões, aplicar cores condicionais (ex.: cartões marcados com a tag "Blocked" ficam vermelhos), adicionar ou remover colunas, definir <span class="term">limites de WIP<span class="tip"><b>WIP (Work In Progress)</b>Quantidade de itens que podem estar simultaneamente em uma coluna/estágio do fluxo — limitar o WIP evita que o time acumule trabalho "em andamento" demais ao mesmo tempo.</span></span> por coluna e criar <span class="term">swimlanes<span class="tip"><b>Swimlane</b>Divisão horizontal do quadro Kanban, útil para destacar itens de prioridade diferente (ex.: uma faixa exclusiva para itens urgentes) sem precisar criar uma coluna nova.</span></span> (raias horizontais) — por exemplo, uma raia dedicada a itens urgentes, cruzando todas as colunas.</p>
+
+  <h3>Trabalhando em sprints</h3>
+  <p>Um projeto Scrum vem com seis sprints já planejados por padrão. Itens do backlog são arrastados para dentro de um sprint específico; o quadro de tarefas do sprint (<em>taskboard</em>) mostra apenas os itens daquele ciclo, permitindo o dia a dia de arrastar tarefas entre "A Fazer", "Em Progresso" e "Feito". A aba <strong>Capacity</strong> permite planejar quantas horas cada pessoa do time pode dedicar por dia — informação que alimenta o gráfico de <span class="term">Burndown<span class="tip"><b>Gráfico de Burndown</b>Gráfico que mostra o esforço restante em um sprint ao longo do tempo, comparando o planejado com o real — ajuda a visualizar se a equipe está "queimando" o trabalho no ritmo esperado.</span></span>, que compara o trabalho planejado, a capacidade real e o esforço restante dia a dia.</p>
+
+  <div class="block quote">
+    <div class="block-label">💬 Do livro</div>
+    <p>Em um sprint perfeito, as três linhas do burndown (planejada, capacidade e restante) andariam coladas — mas isso quase nunca acontece. Segundo o autor, o padrão mais comum é a linha de trabalho restante cair rápido no início (tarefas fáceis, superestimadas), subir um pouco no meio (quando surgem pendências) e cair abruptamente perto do fim, quando todos correm para fechar suas tarefas.</p>
+  </div>
+
+  <h3>Customizando o processo</h3>
+  <p>É possível criar um <span class="term">processo herdado<span class="tip"><b>Processo herdado (Inherited process)</b>Cópia personalizável de um processo padrão (Basic, Agile, Scrum), que permite adicionar campos e tipos de item de trabalho próprios sem alterar o template original da Microsoft.</span></span> a partir de Basic, Agile ou Scrum, adicionando tipos de item de trabalho customizados (por exemplo, um tipo "Supplier Issue" com um campo de data de entrega estimada) e até novos níveis de backlog. Só depois de adicionar o novo tipo ao nível de backlog correto (em <strong>Backlog levels</strong>) ele passa a aparecer no board e no backlog.</p>
+
+  <h3>Múltiplos boards em um projeto</h3>
+  <p>Criando <strong>times (Teams)</strong> dentro de um mesmo projeto, é possível ter múltiplos boards — por exemplo, um "Back-end Team" com seu próprio board, sprints e configurações, dentro do mesmo projeto Scrum. Não é possível, porém, ter processos diferentes para times diferentes dentro de um mesmo projeto.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>O Boards organiza o trabalho em itens hierárquicos (épico → feature/user story/PBI → task), estimados e planejados em sprints, e visualizados tanto no backlog quanto no quadro Kanban. A customização de processos e a criação de múltiplos times tornam o Boards adaptável a praticamente qualquer fluxo de trabalho.</p>
+  </div>
+</section>
+<section id="cap4" class="chapter">
+  <div class="chapter-kicker">Capítulo 4</div>
+  <h2>Repositórios (Repos)</h2>
+
+  <p>Planejamento é só metade da história — em algum momento a equipe precisa entregar código. O <span class="term">Repos<span class="tip"><b>Repos</b>Módulo do Azure DevOps para controle de versão de código-fonte, baseado em Git.</span></span> é onde times de qualquer tamanho compartilham código, versionam alterações e revisam o trabalho uns dos outros.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>O <strong>Repos</strong> é o <strong>depósito central de plantas e documentos técnicos</strong> do condomínio, com um livro de registro de cada alteração feita na planta original — quem mudou o quê, quando e por quê. Cada <em>branch</em> é uma <strong>cópia de rascunho da planta</strong> onde um engenheiro pode testar uma modificação sem mexer na planta oficial (a <em>branch</em> principal, historicamente chamada <em>master</em>). Só depois de aprovada (via <em>pull request</em>) a alteração é incorporada à planta definitiva.</p>
+  </div>
+
+  <h3>Repositórios e o clone local</h3>
+  <p>Um projeto pode ter múltiplos repositórios — natural em cenários de microsserviços, onde cada serviço tem seu próprio código. Um novo projeto já nasce com um repositório padrão vazio, que pode ser inicializado com um arquivo <code>README.md</code> e um <code>.gitignore</code> apropriado à tecnologia usada (o slide de apoio recomenda, por exemplo, o template "VisualStudio" para projetos .NET).</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ .gitignore</div>
+    <p>O arquivo <code>.gitignore</code> diz ao Git quais arquivos e pastas <strong>não</strong> devem ser versionados — tipicamente pastas geradas automaticamente pelo processo de build (como <code>bin</code> e <code>obj</code> em projetos .NET), que não fazem sentido guardar no histórico.</p>
+  </div>
+
+  <p>O repositório pode ser clonado (copiado para a máquina local) diretamente do botão <strong>Clone</strong>, com suporte nativo a Visual Studio, Visual Studio Code, Android Studio, Eclipse, entre outros — ou via URL HTTPS/SSH para qualquer outra ferramenta.</p>
+
+  <h3>Branches: locais e remotas</h3>
+  <p>Uma <span class="term">branch<span class="tip"><b>Branch (ramificação)</b>Linha de desenvolvimento paralela dentro do repositório Git, que permite trabalhar em uma alteração sem afetar o código principal até que ela esteja pronta.</span></span> local existe só na máquina do desenvolvedor; ao ser enviada (<em>push</em>) para o Azure DevOps, torna-se uma branch remota, compartilhável com o time. Branches sem novos commits há mais de três meses são sinalizadas como <span class="term">stale<span class="tip"><b>Stale branch</b>Branch "parada" — sem novos commits há um tempo prolongado (o Azure DevOps usa três meses como referência), sinal de que pode estar abandonada.</span></span> (obsoletas).</p>
+
+  <h3>Merge e Pull Requests</h3>
+  <p>Unir uma branch de volta à principal é feito por meio de um <span class="term">pull request<span class="tip"><b>Pull Request (PR)</b>Solicitação formal para mesclar (merge) uma branch dentro de outra, geralmente exigindo revisão e aprovação de outra(s) pessoa(s) antes de ser aceita.</span></span> — o mecanismo central de revisão de código no Git. Um PR permite definir título, descrição, vínculo com itens de trabalho e revisores obrigatórios (pessoas que precisam aprovar antes do merge acontecer).</p>
+
+  <div class="sim" id="sim-branch">
+    <div class="sim-title"><span class="dot"></span> Simulador — Branch, commit e merge</div>
+    <div id="branchSim"></div>
+  </div>
+
+  <h3>Políticas de branch</h3>
+  <p>É comum ter uma branch de desenvolvimento e outra de implantação (frequentemente a <em>main</em>/<em>master</em>), que só recebe código já validado e pronto para produção. Para impor essa disciplina, é possível <strong>proteger uma branch</strong>: uma branch protegida não aceita commits diretos (só via pull request) e não pode ser excluída. As políticas de proteção mais relevantes incluem:</p>
+  <ul>
+    <li><strong>Número mínimo de revisores</strong> exigidos para aprovar o PR.</li>
+    <li><strong>Impedir que o autor aprove sua própria alteração</strong> — completar seu próprio PR sem revisão externa anula o propósito da revisão.</li>
+    <li><strong>Reset de votos</strong> quando novas alterações são enviadas depois de uma aprovação.</li>
+    <li><strong>Vínculo obrigatório com um item de trabalho</strong>, garantindo rastreabilidade: todo código mesclado pode ser relacionado a um motivo documentado.</li>
+    <li><strong>Exigir que comentários sejam resolvidos</strong> antes de concluir o PR.</li>
+    <li><strong>Revisores automáticos</strong>, adicionados por padrão a todo PR (por exemplo, o líder técnico ou alguém de QA), inclusive com filtros por tipo de arquivo (ex.: só em alterações de <code>*.html;*.css;*.js</code>).</li>
+    <li><strong>Validação de build</strong> — o pipeline de build precisa passar antes do PR poder ser concluído (aprofundado no Capítulo 5).</li>
+  </ul>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Qual branch é a "padrão"?</div>
+    <p>Ao clonar um repositório, a branch marcada como <em>default</em> é a que vem selecionada automaticamente. Faz sentido, na prática, definir a branch de desenvolvimento como padrão (em <strong>Project Settings → Repositories</strong>), para que novos clones já comecem no lugar certo, em vez de partirem direto da branch de produção.</p>
+  </div>
+
+  <h4>Fluxo prático de um Pull Request</h4>
+  <ol>
+    <li>Uma alteração é commitada e enviada (push) para uma branch de feature.</li>
+    <li>Um pull request é criado, com revisores atribuídos (manualmente ou automaticamente).</li>
+    <li>Os revisores comentam, aprovam, aprovam com sugestões, pedem mudanças ("wait for author") ou rejeitam.</li>
+    <li>Na aba <strong>Files</strong>, o revisor compara o código antigo e o novo (lado a lado ou em linha) e comenta diretamente na margem.</li>
+    <li>Com <span class="term">auto-complete<span class="tip"><b>Auto-complete (Pull Request)</b>Opção que conclui automaticamente o pull request assim que todas as condições (aprovações, builds, comentários resolvidos) forem satisfeitas — sem precisar voltar manualmente para clicar em "concluir".</span></span> habilitado, assim que todas as condições forem satisfeitas o PR é mesclado automaticamente, sem precisar de uma ação manual final.</li>
+  </ol>
+
+  <h3>Segurança de branch</h3>
+  <p>Além das políticas gerais, é possível conceder permissões específicas por pessoa ou grupo em uma branch — por exemplo, a permissão <strong>"Bypass policies when completing pull requests"</strong>, que permite ignorar as políticas em situações excepcionais (como uma correção urgente com a equipe de revisão indisponível). Esse tipo de permissão deve ser concedido com cautela.</p>
+
+  <h3>Tags</h3>
+  <p>Uma <span class="term">tag<span class="tip"><b>Tag</b>Marcador fixo que aponta para um commit específico no histórico do Git — ao contrário de uma branch, uma tag não recebe novos commits depois de criada. Útil para marcar versões, como v1.0.</span></span> é um ponteiro fixo para um commit específico do histórico — como uma branch "congelada" — comumente usada para marcar versões (ex.: <code>v1.0</code>, <code>beta-0.9.1</code>). Usar tags em vez de branches para marcar versões ajuda a manter o número de branches sob controle.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>O Repos oferece tudo o que se espera de uma ferramenta de controle de versão e CI/CD: branches, pull requests, comparação e revisão de código, e tags — tudo vinculável de volta aos itens de trabalho do Boards. A partir daqui, o código versionado está pronto para ser compilado e implantado automaticamente.</p>
+  </div>
+</section>
+<section id="cap5" class="chapter">
+  <div class="chapter-kicker">Capítulo 5</div>
+  <h2>Build Pipelines</h2>
+
+  <p>Com o código sob controle de versão, o próximo passo é compilá-lo automaticamente. Um <span class="term">build pipeline<span class="tip"><b>Build pipeline</b>Sequência automatizada de etapas (restaurar dependências, compilar, testar, publicar) executada sempre que há uma mudança no código, garantindo que ele ainda "funciona" antes de seguir adiante.</span></span> avisa a equipe imediatamente quando uma alteração quebra a compilação — o que, segundo o autor do livro, é onde reside a maior força prática do DevOps: reduz risco, economiza tempo e permite implantar a qualquer momento com o mínimo de indisponibilidade.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>O <strong>build pipeline</strong> é a <strong>vistoria automática de obra</strong> que acontece toda vez que um material novo chega no canteiro: confere se está dentro das especificações, monta uma amostra de teste e só then libera o material para o próximo estágio. Se algo estiver fora do padrão, a vistoria barra ali mesmo — ninguém no condomínio fica sabendo só quando a parede já caiu.</p>
+  </div>
+
+  <h3>Pipelines clássicos (editor visual)</h3>
+  <p>O Azure DevOps oferece dois caminhos para criar um pipeline: o <span class="term">editor clássico<span class="tip"><b>Editor clássico (Classic editor)</b>Interface visual (sem código) para montar pipelines de build/release no Azure DevOps, arrastando e configurando tarefas prontas.</span></span>, mais visual e didático, ou pipelines em <span class="term">YAML<span class="tip"><b>YAML</b>Formato de texto legível por humanos para configuração — o nome é um acrônimo recursivo de "YAML Ain't Markup Language". No Azure DevOps, permite descrever pipelines inteiros como código, versionável junto com o próprio repositório.</span></span> ("pipeline como código"). Ao criar um pipeline pelo editor clássico, é preciso indicar a origem do código (Azure Repos Git, GitHub, Bitbucket Cloud, etc.) e um <span class="term">template<span class="tip"><b>Template (de pipeline)</b>Conjunto pré-configurado de tarefas para uma tecnologia específica (ex.: ASP.NET Core, Node.js, Docker), que serve de ponto de partida em vez de montar tudo do zero.</span></span> pronto (ex.: ASP.NET Core, Docker Container, Maven, Python package) ou um "Empty job" para montar do zero.</p>
+
+  <p>Um pipeline típico gerado pelo template ASP.NET Core tem uma sequência clássica de tarefas: <strong>Restore → Build → Test → Publish → Publish Artifact</strong>.</p>
+
+  <div class="sim" id="sim-pipeline">
+    <div class="sim-title"><span class="dot"></span> Simulador — Etapas de um build pipeline</div>
+    <div id="pipelineSim"></div>
+  </div>
+
+  <h4>Estrutura em três níveis</h4>
+  <ul>
+    <li><strong>Pipeline</strong> — nível mais alto: nome, <span class="term">agent pool<span class="tip"><b>Agent pool</b>Conjunto de servidores (agentes) disponíveis para executar as tarefas de um pipeline — pode ser hospedado pela própria Microsoft (Azure Pipelines) ou um agente privado, instalado pela equipe.</span></span> (hospedado pela Microsoft ou privado) e especificação do agente (Windows, Ubuntu, macOS).</li>
+    <li><strong>Job (trabalho/agente)</strong> — um conjunto de tarefas executado em um único servidor. Configurações como <span class="term">demand<span class="tip"><b>Demand (Agent demand)</b>Requisito que um agente privado precisa satisfazer para poder rodar um job — por exemplo, ter uma versão específica de uma ferramenta instalada.</span></span> (exigência de que o agente tenha, por exemplo, uma versão específica de software instalada) ficam neste nível.</li>
+    <li><strong>Task (tarefa)</strong> — a menor unidade executável: rodar o CLI do .NET, executar um script Bash, assinar um pacote Android, etc. Há centenas de tarefas disponíveis, incluindo extensões do Marketplace.</li>
+  </ul>
+
+  <h4>Variáveis e valores vinculados (linked)</h4>
+  <p>Muitos campos de uma tarefa podem ser <span class="term">vinculados<span class="tip"><b>Valor vinculado (Linked value)</b>Campo de configuração cujo valor está amarrado a uma variável definida no nível do pipeline — mudar a variável muda automaticamente todos os campos vinculados a ela.</span></span> a uma <span class="term">variável<span class="tip"><b>Variável (Pipeline variable)</b>Valor nomeado e reutilizável dentro do pipeline (ex.: $(BuildConfiguration)), que pode ser referenciado em várias tarefas e alterado em um único lugar.</span></span> do pipeline, de forma que alterar a variável uma vez propaga a mudança para todos os campos vinculados. Variáveis também podem ser marcadas como <strong>secretas</strong> (exibidas como <code>********</code> e nunca reveladas depois de salvas) — essenciais para senhas e chaves.</p>
+
+  <h3>Artefatos: o produto final do build</h3>
+  <p>O objetivo de um build pipeline é gerar um <span class="term">artefato<span class="tip"><b>Artefato (de build)</b>Qualquer arquivo de saída produzido por um pipeline — tipicamente o pacote compilado e pronto para implantação, disponível para as próximas etapas (release).</span></span> pronto para implantação. A tarefa <strong>Publish</strong> roda o comando <code>dotnet publish</code>, preparando os arquivos; a tarefa <strong>Publish Artifact</strong> pega esse resultado (na pasta indicada pela variável <code>$(build.artifactstagingdirectory)</code>) e o disponibiliza — por padrão, com o nome <code>drop</code> — para as etapas seguintes do processo.</p>
+
+  <h3>Rodando o build</h3>
+  <p>Ao clicar em <strong>Save & queue</strong>, o build é colocado na fila e roda assim que um agente estiver disponível. Com apenas um agente hospedado gratuito, builds e releases concorrentes esperam sua vez — mais jobs paralelos podem ser comprados na seção de faturamento. Cada tarefa gera um log detalhado, essencial para diagnosticar falhas.</p>
+
+  <h3>Integração Contínua (CI) na prática</h3>
+  <p>Na aba <strong>Triggers</strong>, a opção <strong>Enable continuous integration</strong> faz o pipeline disparar automaticamente a cada push em uma branch específica (com opção de incluir, excluir branches, ou filtrar por caminho de arquivo). A opção de "agrupar" (<em>batch</em>) mudanças evita disparar um build para cada commit individual quando vários chegam quase juntos — mais rápido, mas dificulta saber qual commit especificamente quebrou o build, caso aconteça. Também é possível agendar builds (por exemplo, todo dia às 5h da manhã) para detectar quebras causadas por dependências externas, mesmo sem mudança de código.</p>
+
+  <div class="sim" id="sim-cicd">
+    <div class="sim-title"><span class="dot"></span> Simulador — Gatilho de CI (push → build automático)</div>
+    <div id="cicdSim"></div>
+  </div>
+
+  <h3>Agentes privados</h3>
+  <p>O plano gratuito permite um <span class="term">agente privado<span class="tip"><b>Agente privado (Private/self-hosted agent)</b>Servidor próprio (podendo ser o computador da própria pessoa) configurado para executar pipelines do Azure DevOps, em vez de usar um agente hospedado pela Microsoft.</span></span>, que pode ser Windows, Linux ou macOS. Vantagens sobre o agente hospedado: não é uma máquina "zerada" a cada execução (não precisa rebaixar dependências do zero toda vez, o que acelera builds sucessivos), e permite instalar softwares de terceiros necessários para builds específicos. A instalação envolve baixar o pacote do agente, executar um script de configuração via PowerShell e autenticar com um <span class="term">Personal Access Token (PAT)<span class="tip"><b>Personal Access Token (PAT)</b>Token gerado pelo próprio usuário para autenticar ferramentas externas (como um agente de build) sem usar a senha da conta diretamente. Pode ter escopo e validade limitados.</span></span> com o escopo <em>Read & manage Agent Pools</em>.</p>
+
+  <h3>Pipelines em YAML</h3>
+  <p>Ao criar um pipeline apontando para <strong>Azure Repos Git</strong>, o Azure DevOps oferece templates em YAML prontos. O arquivo resultante (<code>azure-pipelines.yml</code>) é commitado no próprio repositório — ou seja, o pipeline passa a ser <strong>versionado como código</strong>, junto do resto do projeto. A vantagem é rastreabilidade e reuso (copiar/colar entre projetos); a desvantagem é uma curva de aprendizado maior que o editor visual.</p>
+
+  <pre># Exemplo simplificado de pipeline YAML
+trigger:
+  - develop
+pool:
+  vmImage: 'windows-2019'
+variables:
+  buildConfiguration: 'Release'
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: Restore
+    inputs:
+      command: restore
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      arguments: '--configuration $(buildConfiguration)'</pre>
+
+  <p>É possível alternar entre os dois mundos: o editor clássico tem um botão <strong>View YAML</strong> que exporta a configuração visual para um arquivo YAML equivalente — útil para migrar um pipeline existente sem reescrevê-lo do zero.</p>
+
+  <h3>Segurança do pipeline</h3>
+  <p>Como em projetos e repositórios, é possível gerenciar permissões específicas por pipeline — quem pode excluir builds, interromper execuções em andamento ou visualizar resultados — atribuindo essas permissões a grupos ou usuários individuais.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>Build pipelines automatizam a verificação de que o código compila, passa nos testes e está pronto para virar um artefato implantável. O editor clássico é mais didático; o YAML trata o pipeline como código versionável. Agentes privados aceleram builds recorrentes e liberam controle total do ambiente de compilação.</p>
+  </div>
+</section>
+<section id="cap6" class="chapter">
+  <div class="chapter-kicker">Capítulo 6</div>
+  <h2>Release Pipelines</h2>
+
+  <p>Se o build pipeline garante que o código <em>compila</em>, o <span class="term">release pipeline<span class="tip"><b>Release pipeline</b>Pipeline responsável por pegar o artefato gerado pelo build e efetivamente implantá-lo (deploy) em um ou mais ambientes, como desenvolvimento, teste, homologação e produção.</span></span> cuida de <em>implantar</em> esse artefato nos ambientes certos, na ordem certa, com as aprovações certas.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>Se o build pipeline é a vistoria do material, o <strong>release pipeline</strong> é a <strong>logística de entrega por andares</strong>: o material aprovado sobe primeiro para o "andar piloto" (ambiente de <em>Development</em>), depois, com aprovação do síndico, para o "andar de testes" (<em>Test</em>), e só por último, com aprovação final, para os andares ocupados (<em>Production</em>). Cada andar é um <span class="term">stage<span class="tip"><b>Stage (estágio)</b>Fase distinta de um release pipeline, tipicamente correspondendo a um ambiente (Development, Test, Acceptance, Production).</span></span> do pipeline.</p>
+  </div>
+
+  <h3>O editor de release</h3>
+  <p>Ao criar um novo release pipeline, escolhe-se um template — vários já prontos para implantação em <span class="term">Azure App Service<span class="tip"><b>Azure App Service</b>Serviço do Azure para hospedar aplicações web, APIs REST e back-ends móveis sem precisar gerenciar servidores diretamente.</span></span> (Java, Node.js, PHP, Python, Go, Ruby on Rails), além de Azure Service Fabric, Azure Functions, IIS e bancos de dados SQL. Também é possível implantar em AWS, Google Cloud ou servidores próprios. Diferente do build, o editor de release <strong>não oferece a opção YAML</strong> — trabalha só de forma visual (isso muda com o recurso de <em>Environments</em>, visto adiante).</p>
+
+  <p>Cada pipeline de release consome um <strong>artefato</strong> — normalmente o artefato de um build pipeline específico, mas também pode vir diretamente de um repositório Git, GitHub ou até Jenkins.</p>
+
+  <div class="sim" id="sim-release">
+    <div class="sim-title"><span class="dot"></span> Simulador — Estágios de um release pipeline (Dev → Test → Produção)</div>
+    <div id="releaseSim"></div>
+  </div>
+
+  <h3>Implantando recursos do Azure</h3>
+  <p>Além do código da aplicação, o Azure DevOps também consegue automatizar a criação da própria infraestrutura de nuvem, usando o <span class="term">Azure CLI<span class="tip"><b>Azure CLI</b>Ferramenta de linha de comando para criar e gerenciar recursos do Azure via scripts.</span></span> ou templates <span class="term">ARM<span class="tip"><b>ARM (Azure Resource Manager)</b>Modelo declarativo em JSON que descreve quais recursos de nuvem (servidores, bancos, planos de hospedagem) devem existir e como devem estar configurados — permite recriar infraestrutura inteira a partir de um arquivo.</span></span> (Azure Resource Manager), escritos em JSON. Um exemplo simples: um comando de uma linha no Azure CLI já cria um novo <span class="term">grupo de recursos<span class="tip"><b>Resource group</b>Container lógico que agrupa recursos relacionados do Azure (servidores, bancos de dados, planos de hospedagem) para facilitar gestão e cobrança conjunta.</span></span>:</p>
+  <pre>az group create --name "development" --location "West Europe"</pre>
+  <p>Implantações via ARM são <span class="term">incrementais<span class="tip"><b>Implantação incremental</b>Modelo de implantação de infraestrutura onde apenas as diferenças em relação ao estado atual são aplicadas — rodar o mesmo template várias vezes não duplica recursos já existentes.</span></span>: rodar o mesmo template várias vezes não recria recursos que já existem, apenas aplica o que mudou.</p>
+
+  <h3>Estágios, variáveis e clonagem</h3>
+  <p>Um estágio pode ser clonado para criar rapidamente um novo (por exemplo, duplicar "Development" para criar "Test"), mudando depois apenas os valores específicos daquele ambiente. Uma prática recomendada pelo livro é substituir valores fixos (como o nome literal do grupo de recursos) por <strong>variáveis com escopo por estágio</strong> — assim, clonar um estágio já traz consigo as variáveis corretas, bastando ajustar os valores.</p>
+
+  <h3>Aprovações (Approvals)</h3>
+  <p>Cada estágio pode ter <span class="term">aprovações<span class="tip"><b>Approval (aprovação)</b>Gate manual configurado antes ou depois de um estágio de deployment, que exige a autorização explícita de uma pessoa designada antes do pipeline continuar.</span></span> de pré-implantação e/ou pós-implantação — um "portão" manual que precisa ser liberado por uma pessoa específica antes do release avançar. É assim que se garante, por exemplo, que ninguém implanta em produção sem revisão humana, mesmo com todo o resto automatizado.</p>
+
+  <h3>Conexões de serviço e grupos de variáveis</h3>
+  <p>Uma <span class="term">conexão de serviço<span class="tip"><b>Service connection</b>Credencial configurada no Azure DevOps que autoriza pipelines a acessar recursos externos (como uma assinatura Azure) em nome da equipe, sem expor credenciais pessoais.</span></span> autoriza o Azure DevOps a atuar em uma assinatura Azure (criada automaticamente ao configurar o primeiro deploy, mas editável manualmente depois). Um <span class="term">grupo de variáveis<span class="tip"><b>Variable group</b>Coleção nomeada de variáveis reutilizável entre múltiplos pipelines de build e release — mudar o valor em um único lugar propaga para todos os pipelines que o utilizam.</span></span> permite reaproveitar as mesmas variáveis entre vários pipelines — e pode ser vinculado a um <span class="term">Azure Key Vault<span class="tip"><b>Azure Key Vault</b>Serviço do Azure para armazenar segredos (senhas, chaves de API, certificados) de forma centralizada e segura, com controle de acesso via Azure AD.</span></span> para gerenciar segredos com controle de acesso robusto.</p>
+
+  <h3>Grupos de tarefas (Task groups)</h3>
+  <p>Sequências de tarefas repetidas em vários pipelines podem ser empacotadas em um <span class="term">grupo de tarefas<span class="tip"><b>Task group</b>Conjunto de tarefas de pipeline empacotado e reutilizável, versionado, que pode ser inserido em qualquer pipeline como se fosse uma única tarefa.</span></span> versionado, evitando duplicação e facilitando manutenção centralizada.</p>
+
+  <h3>Grupos de implantação e Environments</h3>
+  <p>Para implantar em servidores próprios (não gerenciados pela Azure), existe o conceito de <span class="term">deployment group<span class="tip"><b>Deployment group</b>Agrupamento lógico de servidores próprios registrados no Azure DevOps para receber implantações diretas, fora da nuvem Azure.</span></span> — um servidor é registrado via script PowerShell e passa a fazer parte de um grupo-alvo de implantações.</p>
+
+  <p>O recurso mais recente é <span class="term">Environments<span class="tip"><b>Environments</b>Recurso do Azure DevOps que une, pela primeira vez, a flexibilidade do YAML (do build) com o conceito de estágios (do release) — permitindo escrever pipelines de release inteiramente como código.</span></span>: ele combina o melhor dos dois mundos — pipelines com <em>stages</em> (como o release clássico) escritos inteiramente em YAML (como o build). A estrutura aninha <code>stages → jobs → deployment → strategy (runOnce) → steps</code>.</p>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Limitação conhecida</div>
+    <p>Segundo o autor, pipelines multi-estágio baseados em Environments ainda não oferecem, de forma nativa e simples, o disparo manual de um estágio específico (por exemplo, "implantar em produção só quando eu clicar", dias depois do deploy em desenvolvimento). Existem contornos usando condições e aprovações, mas o autor afirma preferir, por enquanto, o release pipeline clássico para esse cenário.</p>
+  </div>
+
+  <h3>Segurança de pipelines de release</h3>
+  <p>Assim como nos build pipelines, é possível gerenciar quem pode excluir, parar ou visualizar releases, atribuindo permissões a grupos e usuários específicos.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>Release pipelines cuidam da implantação em múltiplos ambientes, incluindo a própria infraestrutura de nuvem via templates ARM. Aprovações manuais, grupos de variáveis e conexões de serviço dão controle e segurança ao processo. O recurso Environments aponta para um futuro em que build e release convergem totalmente para YAML.</p>
+  </div>
+</section>
+<section id="cap7" class="chapter">
+  <div class="chapter-kicker">Capítulo 7</div>
+  <h2>Test Plans</h2>
+
+  <p>Boards planeja, Repos versiona, Pipelines constrói e implanta — e o <span class="term">Test Plans<span class="tip"><b>Test Plans</b>Módulo do Azure DevOps dedicado à gestão de testes manuais: planejamento, execução, registro de resultados e geração de relatórios.</span></span> garante que tudo isso realmente funciona do ponto de vista de quem testa. É o módulo menos usado do pacote, segundo o autor, mas cobre uma etapa que a automação de testes unitários (dentro do pipeline) não substitui: o teste manual, exploratório e de aceitação.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>O <strong>Test Plans</strong> é a <strong>vistoria de qualidade antes da entrega das chaves</strong> — um checklist detalhado que confere item por item (torneira pinga? luz acende? porta fecha certo?) antes de liberar o apartamento para o morador. Diferente da vistoria automática de material (build), aqui é uma pessoa de carne e osso testando o resultado final na prática.</p>
+  </div>
+
+  <h3>Habilitando o Test Plans</h3>
+  <p>Contas <strong>gratuitas (Basic)</strong> têm acesso limitado ao Test Plans; o recurso completo exige um plano pago ou um <strong>trial gratuito de 30 dias</strong>, habilitável em <strong>Billing</strong>. Assinantes Enterprise, Test Professional ou MSDN Platforms já têm acesso completo por padrão.</p>
+
+  <h3>No plano gratuito: testes ligados a tarefas do board</h3>
+  <p>Sem o plano pago, testes são criados como tasks do tipo <em>test</em> dentro de um item do backlog (Product Backlog Item, User Story etc.), aparecendo em uma <em>suíte de teste</em> automática. Cada teste pode ser executado manualmente (marcando passou/falhou), com opção de anexar comentários, capturas de tela e até abrir um bug diretamente a partir de um teste que falhou.</p>
+
+  <h4>Gráficos e relatórios</h4>
+  <p>A aba <strong>Chart</strong> permite montar gráficos de pizza, coluna, barra ou linha sobre os casos de teste — por exemplo, um gráfico de pizza agrupado por <em>Outcome</em> (resultado: passou/falhou/bloqueado) dá uma visão instantânea da saúde dos testes daquele ciclo. A aba <strong>Progress report</strong> resume rapidamente quantos testes estão abertos, quantos passaram, quantos falharam e qual a porcentagem já executada.</p>
+
+  <h3>No plano pago: gestão completa de casos de teste</h3>
+  <p>Planos pagos desbloqueiam a aba <strong>Define</strong>, permitindo criar casos de teste diretamente no Test Plans (não apenas via task no board), inclusive em uma interface de grade parecida com uma planilha, onde múltiplos testes e seus passos podem ser digitados de uma vez.</p>
+
+  <h4>Parâmetros</h4>
+  <p>Um <span class="term">conjunto de parâmetros<span class="tip"><b>Parameter set</b>Conjunto de valores de teste reutilizáveis (ex.: diferentes quantidades, nomes, valores nulos) que podem ser referenciados dentro dos passos de um caso de teste, garantindo cobertura sistemática de casos de borda.</span></span> permite testar a mesma ação com vários valores diferentes — por exemplo, testar um campo de "quantidade" com 0, 1, 256, -1, vazio e nulo, cobrindo casos de borda de forma sistemática.</p>
+
+  <h4>Configurações</h4>
+  <p>Uma <span class="term">configuração de teste<span class="tip"><b>Test configuration</b>Combinação específica de variáveis de ambiente (ex.: sistema operacional, navegador, placa de vídeo) sob a qual um conjunto de testes deve ser executado.</span></span> combina variáveis de ambiente (sistema operacional, navegador, placa de vídeo etc.). Associar múltiplas configurações a uma suíte de teste multiplica automaticamente o número de execuções necessárias — por exemplo, testar em dois navegadores dobra a quantidade de testes a rodar, cobrindo cenários cross-platform de forma organizada.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>O Test Plans transforma testes manuais em um processo rastreável e mensurável, com integração direta ao Boards (feedback imediato aos desenvolvedores via bugs vinculados) e recursos de relatório que dão visibilidade a todo o time sobre a real qualidade do que está sendo entregue.</p>
+  </div>
+</section>
+
+<section id="cap8" class="chapter">
+  <div class="chapter-kicker">Capítulo 8</div>
+  <h2>Artifacts</h2>
+
+  <p>O último módulo, e talvez o mais subestimado segundo o autor, é o <span class="term">Artifacts<span class="tip"><b>Artifacts</b>Módulo do Azure DevOps para hospedar pacotes de software reutilizáveis (feeds), com suporte a NuGet, npm, Maven e Python.</span></span>: um repositório privado de pacotes reutilizáveis — pense em bibliotecas de código compartilhadas entre vários projetos, sem precisar publicá-las em um repositório público.</p>
+
+  <div class="block analogy">
+    <div class="block-label">🏢 No condomínio</div>
+    <p>O <strong>Artifacts</strong> é o <strong>almoxarifado central de peças padronizadas</strong> do condomínio — parafusos, dobradiças, torneiras do mesmo modelo usado em todos os apartamentos. Em vez de cada equipe de manutenção comprar (ou fabricar) sua própria peça toda vez, todo mundo retira do mesmo estoque compartilhado, com controle de versão de cada lote.</p>
+  </div>
+
+  <h3>Feeds</h3>
+  <p>Um <span class="term">feed<span class="tip"><b>Feed (Artifacts)</b>Repositório de pacotes dentro do Azure DevOps Artifacts — pode ser específico de um projeto ou compartilhado por toda a organização.</span></span> é criado automaticamente por padrão, com escopo de <strong>organização</strong> (visível em todos os projetos, sempre privado). Novos feeds criados manualmente têm escopo de <strong>projeto</strong> por padrão (públicos se o projeto for público). Um feed pode ter <span class="term">fontes upstream<span class="tip"><b>Upstream sources</b>Configuração que permite ao feed buscar automaticamente pacotes de fontes públicas externas (como o NuGet.org) e mantê-los em cache local, evitando dependência direta da fonte externa.</span></span> habilitadas — o feed passa a "espelhar" pacotes públicos automaticamente, útil como cache, mas consome o limite gratuito de armazenamento (2 GB).</p>
+
+  <h3>Conectando-se a um feed</h3>
+  <p>Existem três formas de autenticação para publicar e restaurar pacotes: diretamente pelo <strong>Visual Studio</strong> (via Package Manager Settings), pelo <span class="term">.NET Core CLI<span class="tip"><b>.NET Core CLI</b>Ferramenta de linha de comando do .NET Core/.NET, usada para compilar, testar, publicar e gerenciar pacotes de projetos .NET.</span></span> com usuário e senha, ou usando um <strong>Personal Access Token (PAT)</strong> em vez de senha — mais seguro e recomendado para automação.</p>
+
+  <h3>Publicando pacotes</h3>
+  <p>Criar um pacote <span class="term">NuGet<span class="tip"><b>Pacote NuGet</b>Arquivo compactado (.nupkg) contendo uma biblioteca .NET compilada e seus metadados, pronto para ser referenciado por outros projetos.</span></span> exige apenas marcar a opção <code>GeneratePackageOnBuild</code> no projeto .NET — o build passa a gerar automaticamente um arquivo <code>.nupkg</code>. Publicá-lo no feed pode ser feito via linha de comando (<code>dotnet nuget push</code>) autenticado com PAT, ou usando o <strong>Azure Artifacts Credential Provider</strong>, que evita digitar o token repetidamente ao lembrar as credenciais após o primeiro login.</p>
+
+  <div class="block warn">
+    <div class="block-label">⚠ Versões não se repetem</div>
+    <p>Não é possível publicar duas vezes o pacote com exatamente a mesma versão — republicar exige incrementar o número de versão. Isso vale também em pipelines automatizados: um <code>push</code> de uma versão já existente falha, a menos que a tarefa NuGet tenha a opção <strong>"Allow duplicates to be skipped"</strong> habilitada.</p>
+  </div>
+
+  <h3>Publicando e restaurando via pipeline</h3>
+  <p>Publicar pacotes automaticamente é apenas trocar a tarefa de "publish" por um "push" no pipeline de build. Para restaurar (baixar) pacotes do feed interno como dependência de outro projeto, a tarefa <code>Restore</code> precisa apontar explicitamente para o feed correto (<code>feedsToUse: 'select'</code> e o ID do feed) — caso contrário, o build falha ao não encontrar o pacote em fontes públicas externas.</p>
+
+  <div class="block info">
+    <div class="block-label">ℹ Resumo do capítulo</div>
+    <p>O Artifacts fecha o ciclo do Azure DevOps: além de planejar (Boards), versionar (Repos), compilar/implantar (Pipelines) e testar (Test Plans), o time ganha um repositório privado e versionado para reutilizar código entre projetos, com integração nativa aos pipelines de build e release.</p>
+  </div>
+</section>
+<section id="glossario" class="chapter">
+  <div class="chapter-kicker">Referência</div>
+  <h2>Glossário</h2>
+  <p>Todos os termos técnicos, siglas e nomes de produtos usados neste guia, gerados automaticamente a partir das explicações inline (ordem alfabética).</p>
+  <div id="glossarioList"><dl id="glossarioDl"></dl></div>
+
+  <h3>Bibliografia / Fontes</h3>
+  <ul>
+    <li>Rossel, Sander. <em>Azure DevOps Succinctly</em>. Syncfusion, Inc., 2020. Disponível gratuitamente (mediante cadastro) em syncfusion.com.</li>
+    <li>Halvorsen, Hans-Petter. <em>Azure DevOps</em> (slides). University of South-Eastern Norway. halvorsen.blog.</li>
+  </ul>
+
+  <div class="block info">
+    <div class="block-label">ℹ Nota de fidelidade ao conteúdo</div>
+    <p>Este guia cobre os oito capítulos do livro-fonte (O que é DevOps, Configuração, Boards, Repos, Build Pipelines, Release Pipelines, Test Plans e Artifacts) e incorpora o passo a passo prático dos slides de apoio (criação de projeto, convite de usuários, configuração do .gitignore, clone e operações Git no Visual Studio). Todo o texto foi <strong>reescrito com explicações originais</strong> — não é cópia literal do livro ou dos slides — respeitando a licença de uso pessoal/educacional da obra original.</p>
+  </div>
+</section>
+
+<footer>
+  <span class="badge">Guia gerado automaticamente</span>
+  <span class="badge">HTML autocontido — sem dependências além de fontes Google</span>
+  <p style="margin-top:10px;">Azure DevOps — Guia de Estudo Interativo. Baseado em <em>Azure DevOps Succinctly</em> (Sander Rossel / Syncfusion) e slides de Hans-Petter Halvorsen.</p>
+</footer>
+
+</main>
+</div>
+<script>
+/* ---------- TERM TOOLTIPS ---------- */
+document.querySelectorAll('.term').forEach(function(el){
+  el.addEventListener('click', function(e){
+    e.stopPropagation();
+    var wasOpen = el.classList.contains('open');
+    document.querySelectorAll('.term.open').forEach(function(o){ o.classList.remove('open'); });
+    if(!wasOpen) el.classList.add('open');
+  });
+});
+document.addEventListener('click', function(){
+  document.querySelectorAll('.term.open').forEach(function(o){ o.classList.remove('open'); });
+});
+
+/* ---------- GLOSSARY AUTO-BUILD ---------- */
+(function(){
+  var seen = {};
+  var entries = [];
+  document.querySelectorAll('.term').forEach(function(el){
+    var tip = el.querySelector('.tip');
+    if(!tip) return;
+    var b = tip.querySelector('b');
+    var title = b ? b.textContent.trim() : el.childNodes[0].textContent.trim();
+    if(seen[title]) return;
+    seen[title] = true;
+    var desc = tip.textContent.replace(title,'').trim();
+    entries.push({title:title, desc:desc});
+  });
+  entries.sort(function(a,b){ return a.title.localeCompare(b.title, 'pt-BR'); });
+  var dl = document.getElementById('glossarioDl');
+  entries.forEach(function(e){
+    var dt = document.createElement('dt'); dt.textContent = e.title;
+    var dd = document.createElement('dd'); dd.textContent = e.desc;
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+})();
+
+/* ---------- SCROLLSPY ---------- */
+(function(){
+  var links = Array.from(document.querySelectorAll('#navlist a'));
+  var sections = links.map(function(l){ return document.querySelector(l.getAttribute('href')); }).filter(Boolean);
+  function onScroll(){
+    var pos = window.scrollY + 120;
+    var current = sections[0];
+    sections.forEach(function(s){ if(s.offsetTop <= pos) current = s; });
+    links.forEach(function(l){ l.classList.remove('active'); });
+    var idx = sections.indexOf(current);
+    if(idx >= 0) links[idx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ================= SIMULATOR 1: SCRUM STEPPER ================= */
+(function(){
+  var steps = [
+    {t:'Backlog cheio', d:'O Product Owner mantém uma lista priorizada de itens (Product Backlog Items). Tudo o que ainda não foi feito mora aqui.'},
+    {t:'Planejamento do sprint', d:'O time estima o esforço dos itens do topo do backlog e decide quantos cabem no próximo sprint, considerando sua capacidade.'},
+    {t:'Daily Scrum', d:'Reunião diária de ~15 minutos para alinhar progresso, sem virar status report longo — foco em obstáculos e próximos passos.'},
+    {t:'Trabalho no sprint', d:'Desenvolvedores movem tarefas entre "A Fazer", "Em Progresso" e "Feito" no taskboard, atualizando o esforço restante dia a dia.'},
+    {t:'Revisão do sprint', d:'Ao final do ciclo, o time demonstra o que foi entregue — feedback direto de quem pediu o trabalho.'},
+    {t:'Retrospectiva', d:'O time discute o que funcionou bem e o que pode melhorar antes de iniciar o próximo sprint — melhoria contínua do processo.'}
+  ];
+  var idx = 0;
+  var root = document.getElementById('scrumStepper');
+  function render(){
+    var html = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">';
+    steps.forEach(function(s,i){
+      html += '<button data-i="'+i+'" style="flex:1;min-width:90px;padding:10px 6px;border-radius:8px;border:1px solid '+(i===idx?'#5ec8f8':'#24425f')+';background:'+(i===idx?'#17324a':'#0a1826')+';color:'+(i===idx?'#5ec8f8':'#b9c6d4')+';font-family:IBM Plex Mono,monospace;font-size:11px;cursor:pointer;transition:.15s;">'+ (i+1) +'. '+s.t+'</button>';
+    });
+    html += '</div>';
+    html += '<div style="background:#142943;border-radius:8px;padding:16px 20px;border-left:4px solid #5ec8f8;"><strong style="color:#5ec8f8;">'+steps[idx].t+'</strong><p style="margin:8px 0 0;color:#eef2f0;">'+steps[idx].d+'</p></div>';
+    root.innerHTML = html;
+    root.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ idx = parseInt(b.getAttribute('data-i')); render(); });
+    });
+  }
+  render();
+  setInterval(function(){ /* no autoplay, user-driven */ }, 999999);
+})();
+
+/* ================= SIMULATOR 2: HIERARCHY BY PROCESS ================= */
+(function(){
+  var data = {
+    Basic: ['Epic', 'Issue', 'Task'],
+    Agile: ['Epic', 'Feature', 'User Story', 'Task / Bug / Test'],
+    Scrum: ['Epic', 'Feature', 'Product Backlog Item', 'Task / Bug (visível) / Impediment']
+  };
+  var current = 'Basic';
+  var root = document.getElementById('hierarchySim');
+  function render(){
+    var html = '<div style="display:flex;gap:8px;margin-bottom:16px;">';
+    Object.keys(data).forEach(function(k){
+      html += '<button data-k="'+k+'" style="padding:8px 18px;border-radius:20px;border:1px solid '+(k===current?'#7fe0c1':'#24425f')+';background:'+(k===current?'rgba(127,224,193,.12)':'#0a1826')+';color:'+(k===current?'#7fe0c1':'#b9c6d4')+';font-family:IBM Plex Mono,monospace;font-size:12px;cursor:pointer;">'+k+'</button>';
+    });
+    html += '</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+    data[current].forEach(function(level, i){
+      html += '<div style="background:#142943;border:1px solid #24425f;border-radius:8px;padding:12px 16px;font-size:13px;color:#eef2f0;text-align:center;min-width:110px;">'+level+'</div>';
+      if(i < data[current].length -1) html += '<div style="color:#5ec8f8;font-size:18px;">→</div>';
+    });
+    html += '</div>';
+    root.innerHTML = html;
+    root.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ current = b.getAttribute('data-k'); render(); });
+    });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 3: BACKLOG TREE (Feature -> PBI -> Task) ================= */
+(function(){
+  var root = document.getElementById('backlogTreeSim');
+  var tree = [
+    {name:'Feature: Web', open:true, children:[
+      {name:'PBI: Enviar dados do paciente ao médico', open:false, children:[
+        {name:'Task: Criar Web API', done:true},
+        {name:'Task: Criar página de busca', done:false}
+      ]},
+      {name:'PBI: Mostrar informações do paciente', open:false, children:[
+        {name:'Task: Criar página web de dados', done:false}
+      ]}
+    ]},
+    {name:'Feature: Storage', open:false, children:[
+      {name:'PBI: Guardar dados em armazenamento local', open:false, children:[
+        {name:'Task: Criar SQL Server', done:true},
+        {name:'Task: Criar tabelas do banco', done:false}
+      ]}
+    ]}
+  ];
+  function renderNode(node, isFeature){
+    if(isFeature){
+      var childHtml = node.open ? node.children.map(function(c){return renderNode(c,false);}).join('') : '';
+      return '<div style="margin-bottom:10px;">'+
+        '<div class="bnode" data-toggle="'+node.name+'" style="cursor:pointer;background:#17324a;border:1px solid #5ec8f8;border-radius:8px;padding:10px 14px;font-size:13.5px;color:#5ec8f8;display:flex;justify-content:space-between;align-items:center;">'+
+          '<span>🗂 '+node.name+'</span><span style="font-family:monospace;">'+(node.open?'▾':'▸')+'</span></div>'+
+        '<div style="padding-left:22px;margin-top:6px;">'+childHtml+'</div></div>';
+    } else {
+      var childHtml = node.open ? node.children.map(function(c){
+        return '<div style="padding:6px 12px;font-size:12.5px;color:'+(c.done?'#7fe0c1':'#b9c6d4')+';border-left:2px solid #24425f;margin-left:8px;">'+(c.done?'✓ ':'○ ')+c.name+'</div>';
+      }).join('') : '';
+      return '<div style="margin-bottom:8px;">'+
+        '<div class="bnode" data-toggle="'+node.name+'" style="cursor:pointer;background:#142943;border:1px solid #24425f;border-radius:8px;padding:8px 12px;font-size:12.5px;color:#eef2f0;display:flex;justify-content:space-between;align-items:center;">'+
+          '<span>📋 '+node.name+'</span><span style="font-family:monospace;color:#8299ad;">'+(node.open?'▾':'▸')+'</span></div>'+
+        '<div>'+childHtml+'</div></div>';
+    }
+  }
+  function findAndToggle(nodes, name){
+    for(var i=0;i<nodes.length;i++){
+      if(nodes[i].name === name){ nodes[i].open = !nodes[i].open; return true; }
+      if(nodes[i].children && findAndToggle(nodes[i].children, name)) return true;
+    }
+    return false;
+  }
+  function render(){
+    root.innerHTML = tree.map(function(f){ return renderNode(f, true); }).join('') +
+      '<p style="font-size:11.5px;color:#8299ad;margin-top:10px;">Clique nos blocos para expandir/recolher. ✓ = tarefa concluída.</p>';
+    root.querySelectorAll('.bnode').forEach(function(b){
+      b.addEventListener('click', function(){
+        findAndToggle(tree, b.getAttribute('data-toggle'));
+        render();
+      });
+    });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 4: KANBAN BOARD (drag & drop) ================= */
+(function(){
+  var root = document.getElementById('kanbanSim');
+  var cols = ['To Do','Doing','Done'];
+  var cards = [
+    {id:1, title:'Criar SQL Server', col:0},
+    {id:2, title:'Criar Web API', col:0},
+    {id:3, title:'Criar página de busca', col:1},
+    {id:4, title:'Adicionar tabelas do banco', col:1},
+    {id:5, title:'Página de patient info', col:2}
+  ];
+  function render(){
+    var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">';
+    cols.forEach(function(colName, ci){
+      html += '<div class="kcol" data-col="'+ci+'" style="background:#0a1826;border:1px dashed #24425f;border-radius:10px;padding:10px;min-height:160px;">'+
+        '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8299ad;margin-bottom:10px;">'+colName+'</div>';
+      cards.filter(function(c){return c.col===ci;}).forEach(function(c){
+        html += '<div class="kcard" draggable="true" data-id="'+c.id+'" style="background:#142943;border:1px solid #24425f;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#eef2f0;margin-bottom:8px;cursor:grab;">'+c.title+'</div>';
+      });
+      html += '</div>';
+    });
+    html += '</div><p style="font-size:11.5px;color:#8299ad;margin-top:10px;">Arraste os cartões entre colunas — em telas de toque, use o menu (⋮) simplificado abaixo.</p>';
+    root.innerHTML = html;
+
+    var dragged = null;
+    root.querySelectorAll('.kcard').forEach(function(card){
+      card.addEventListener('dragstart', function(){ dragged = card.getAttribute('data-id'); });
+    });
+    root.querySelectorAll('.kcol').forEach(function(col){
+      col.addEventListener('dragover', function(e){ e.preventDefault(); col.style.borderColor='#5ec8f8'; });
+      col.addEventListener('dragleave', function(){ col.style.borderColor='#24425f'; });
+      col.addEventListener('drop', function(e){
+        e.preventDefault();
+        var id = parseInt(dragged);
+        cards.forEach(function(c){ if(c.id===id) c.col = parseInt(col.getAttribute('data-col')); });
+        render();
+      });
+    });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 5: BRANCH / COMMIT / MERGE ================= */
+(function(){
+  var root = document.getElementById('branchSim');
+  var stage = 0;
+  var stages = [
+    {label:'main tem 1 commit inicial', desc:'A branch principal (main/master) começa com o README e o .gitignore.'},
+    {label:'Criar branch "develop"', desc:'Uma nova branch é criada a partir de main — um "rascunho" isolado para trabalhar sem afetar produção.'},
+    {label:'Commit em "develop"', desc:'Uma alteração é feita e commitada na branch develop. A main continua intacta.'},
+    {label:'Pull Request develop → main', desc:'Um pull request é aberto propondo mesclar develop de volta em main. Revisores são notificados.'},
+    {label:'Merge concluído', desc:'Após aprovação, o merge acontece: main agora contém as mudanças de develop, com um commit de merge no histórico.'}
+  ];
+  function render(){
+    var html = '<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">';
+    stages.forEach(function(s,i){
+      html += '<button data-i="'+i+'" style="padding:8px 12px;border-radius:8px;border:1px solid '+(i===stage?'#5ec8f8':'#24425f')+';background:'+(i===stage?'#17324a':'#0a1826')+';color:'+(i===stage?'#5ec8f8':'#b9c6d4')+';font-family:IBM Plex Mono,monospace;font-size:11px;cursor:pointer;">'+(i+1)+'</button>';
+    });
+    html += '</div>';
+
+    // simple SVG-ish visualization using divs
+    var showDevelop = stage >= 1;
+    var developCommit = stage >= 2;
+    var merged = stage >= 4;
+    html += '<div style="position:relative;height:110px;background:#0a1826;border-radius:8px;border:1px solid #24425f;padding:14px 20px;">';
+    html += '<div style="position:absolute;left:20px;right:20px;top:30px;height:2px;background:#5ec8f8;"></div>';
+    html += '<div style="position:absolute;left:16px;top:22px;font-family:monospace;font-size:11px;color:#5ec8f8;">main</div>';
+    html += '<div style="position:absolute;left:16px;top:38px;width:12px;height:12px;border-radius:50%;background:#5ec8f8;"></div>';
+    if(merged){
+      html += '<div style="position:absolute;right:16px;top:38px;width:12px;height:12px;border-radius:50%;background:#7fe0c1;"></div>';
+      html += '<div style="position:absolute;right:6px;top:22px;font-family:monospace;font-size:10px;color:#7fe0c1;">merge</div>';
+    }
+    if(showDevelop){
+      html += '<div style="position:absolute;left:20px;right:60px;top:75px;height:2px;background:#7fe0c1;"></div>';
+      html += '<div style="position:absolute;left:16px;top:67px;font-family:monospace;font-size:11px;color:#7fe0c1;">develop</div>';
+      html += '<div style="position:absolute;left:16px;top:82px;width:12px;height:12px;border-radius:50%;background:#7fe0c1;"></div>';
+      if(developCommit){
+        html += '<div style="position:absolute;left:160px;top:82px;width:12px;height:12px;border-radius:50%;background:#7fe0c1;"></div>';
+      }
+      if(merged){
+        html += '<div style="position:absolute;left:160px;top:60px;width:2px;height:26px;background:#7fe0c1;transform:rotate(20deg);transform-origin:top;"></div>';
+      }
+    }
+    html += '</div>';
+
+    html += '<div style="background:#142943;border-radius:8px;padding:14px 18px;border-left:4px solid #5ec8f8;margin-top:14px;"><strong style="color:#5ec8f8;">'+stages[stage].label+'</strong><p style="margin:6px 0 0;color:#eef2f0;">'+stages[stage].desc+'</p></div>';
+
+    root.innerHTML = html;
+    root.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ stage = parseInt(b.getAttribute('data-i')); render(); });
+    });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 6: BUILD PIPELINE STEPPER ================= */
+(function(){
+  var root = document.getElementById('pipelineSim');
+  var steps = [
+    {t:'Restore', d:'Baixa as dependências do projeto (equivalente a "dotnet restore") — sem isso, o código nem compila.', icon:'📥'},
+    {t:'Build', d:'Compila o código-fonte, aplicando a configuração escolhida (ex.: Release).', icon:'🔨'},
+    {t:'Test', d:'Executa os testes automatizados (unitários) escritos pela equipe — se algum falhar, o pipeline para aqui.', icon:'🧪'},
+    {t:'Publish', d:'Empacota a aplicação, deixando-a pronta para implantação (ex.: gera os arquivos zipados do site).', icon:'📦'},
+    {t:'Publish Artifact', d:'Disponibiliza o pacote gerado como um artefato acessível pelas próximas etapas (release).', icon:'🏷'}
+  ];
+  var active = 0;
+  function render(){
+    var html = '<div style="display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:6px;">';
+    steps.forEach(function(s,i){
+      html += '<div data-i="'+i+'" class="pnode" style="cursor:pointer;flex-shrink:0;text-align:center;padding:14px 10px;border-radius:10px;border:1px solid '+(i===active?'#5ec8f8':'#24425f')+';background:'+(i===active?'#17324a':'#0a1826')+';min-width:110px;">'+
+        '<div style="font-size:22px;">'+s.icon+'</div><div style="font-family:IBM Plex Mono,monospace;font-size:11px;margin-top:6px;color:'+(i===active?'#5ec8f8':'#b9c6d4')+';">'+s.t+'</div></div>';
+      if(i < steps.length -1) html += '<div style="color:#8299ad;font-size:16px;flex-shrink:0;">→</div>';
+    });
+    html += '</div>';
+    html += '<div style="background:#142943;border-radius:8px;padding:14px 18px;border-left:4px solid #5ec8f8;margin-top:14px;"><strong style="color:#5ec8f8;">'+steps[active].t+'</strong><p style="margin:6px 0 0;color:#eef2f0;">'+steps[active].d+'</p></div>';
+    root.innerHTML = html;
+    root.querySelectorAll('.pnode').forEach(function(n){
+      n.addEventListener('click', function(){ active = parseInt(n.getAttribute('data-i')); render(); });
+    });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 7: CI TRIGGER SWITCH ================= */
+(function(){
+  var root = document.getElementById('cicdSim');
+  var enabled = true;
+  var pushed = false;
+  function render(){
+    var html = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;">';
+    html += '<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#eef2f0;cursor:pointer;">'+
+      '<span style="width:42px;height:24px;border-radius:20px;background:'+(enabled?'#5ec8f8':'#24425f')+';position:relative;display:inline-block;transition:.15s;" id="ciToggle">'+
+      '<span style="width:18px;height:18px;border-radius:50%;background:#0d1b2a;position:absolute;top:3px;left:'+(enabled?'21px':'3px')+';transition:.15s;"></span></span>'+
+      'Continuous Integration '+(enabled?'ativado':'desativado')+'</label>';
+    html += '<button id="pushBtn" style="padding:8px 16px;border-radius:8px;border:1px solid #7fe0c1;background:rgba(127,224,193,.1);color:#7fe0c1;font-family:IBM Plex Mono,monospace;font-size:12px;cursor:pointer;">git push origin develop</button>';
+    html += '</div>';
+    html += '<div style="background:#0a1826;border:1px solid #24425f;border-radius:8px;padding:16px 20px;min-height:60px;">';
+    if(pushed && enabled){
+      html += '<span style="color:#7fe0c1;">✓ Push detectado na branch <code>develop</code> → build disparado automaticamente. Pipeline na fila.</span>';
+    } else if(pushed && !enabled){
+      html += '<span style="color:#f7b955;">⚠ Push detectado, mas CI está desativado — nenhum build será disparado. Alguém precisaria rodar manualmente.</span>';
+    } else {
+      html += '<span style="color:#8299ad;">Aguardando um push para simular o gatilho de CI...</span>';
+    }
+    html += '</div>';
+    root.innerHTML = html;
+    root.querySelector('label').addEventListener('click', function(){ enabled = !enabled; render(); });
+    root.querySelector('#pushBtn').addEventListener('click', function(){ pushed = true; render(); });
+  }
+  render();
+})();
+
+/* ================= SIMULATOR 8: RELEASE STAGES ================= */
+(function(){
+  var root = document.getElementById('releaseSim');
+  var stagesData = [
+    {name:'Development', approval:false, desc:'Deploy automático a cada novo artefato de build — ambiente de testes internos da equipe de dev.'},
+    {name:'Test', approval:true, desc:'Requer aprovação manual antes de iniciar. Ambiente onde QA valida manualmente as mudanças.'},
+    {name:'Acceptance', approval:true, desc:'Aprovação de negócio/stakeholders antes de liberar — simula o ambiente real para validação final.'},
+    {name:'Production', approval:true, desc:'Aprovação final (geralmente de um responsável técnico sênior) antes de impactar usuários reais.'}
+  ];
+  var unlocked = [true, false, false, false];
+  function render(){
+    var html = '<div style="display:flex;align-items:stretch;gap:4px;overflow-x:auto;">';
+    stagesData.forEach(function(s, i){
+      var state = unlocked[i] ? (i < stagesData.length-1 && unlocked[i+1] ? 'done' : 'active') : 'locked';
+      var color = state==='done' ? '#7fe0c1' : state==='active' ? '#5ec8f8' : '#24425f';
+      html += '<div style="flex:1;min-width:130px;background:#0a1826;border:1px solid '+color+';border-radius:10px;padding:14px;text-align:center;">'+
+        '<div style="font-family:IBM Plex Mono,monospace;font-size:12px;color:'+color+';margin-bottom:6px;">'+s.name+'</div>'+
+        '<div style="font-size:20px;">'+(state==='done'?'✅':state==='active'?'🟦':'🔒')+'</div>'+
+        (s.approval ? '<div style="font-size:10px;color:#f7b955;margin-top:6px;">requer aprovação</div>' : '<div style="font-size:10px;color:#8299ad;margin-top:6px;">automático</div>')+
+        (unlocked[i] && !(i < stagesData.length-1 && unlocked[i+1]) ? '<button data-i="'+i+'" style="margin-top:10px;padding:5px 10px;border-radius:6px;border:1px solid #5ec8f8;background:rgba(94,200,248,.1);color:#5ec8f8;font-size:10.5px;cursor:pointer;">'+(s.approval?'Aprovar':'Implantar')+'</button>' : '')+
+        '</div>';
+      if(i < stagesData.length-1) html += '<div style="align-self:center;color:#8299ad;">→</div>';
+    });
+    html += '</div>';
+    var activeIdx = unlocked.lastIndexOf(true);
+    html += '<div style="background:#142943;border-radius:8px;padding:14px 18px;border-left:4px solid #5ec8f8;margin-top:14px;"><strong style="color:#5ec8f8;">'+stagesData[activeIdx].name+'</strong><p style="margin:6px 0 0;color:#eef2f0;">'+stagesData[activeIdx].desc+'</p></div>';
+    root.innerHTML = html;
+    root.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        var i = parseInt(b.getAttribute('data-i'));
+        if(i+1 < unlocked.length) unlocked[i+1] = true;
+        render();
+      });
+    });
+  }
+  render();
+})();
+</script>
+</body>
+</html>
