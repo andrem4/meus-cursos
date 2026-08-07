@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-variant="mobile">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Curso Ágil Completo — Scrum, Kanban, Azure Boards e SAFe (Mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#0F1420;
+  --bg-panel:#161D2D;
+  --bg-panel-2:#1C2437;
+  --border:#2A3450;
+  --text:#F1ECE0;
+  --text-dim:#B7C0D1;
+  --text-faint:#7C8AA3;
+  --accent-scrum:#E8A33D;
+  --accent-kanban:#49BFB9;
+  --accent-azure:#5C93FF;
+  --accent-safe:#A585E8;
+  --accent-warn:#E8674A;
+  --accent-restaurant:#E8734A;
+  --radius:14px;
+  --serif:'Fraunces', serif;
+  --sans:'Source Sans 3', system-ui, sans-serif;
+  --mono:'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.65;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+body[data-variant="mobile"]{font-size:17px;}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; letter-spacing:-0.01em; color:var(--text);}
+h1{font-size:2.4rem; line-height:1.15;}
+h2{font-size:1.8rem; margin-top:0;}
+h3{font-size:1.3rem; color:var(--text);}
+h4{font-size:1.05rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); font-family:var(--sans); font-weight:700;}
+p{color:var(--text-dim);}
+a{color:var(--accent-azure);}
+code, .mono{font-family:var(--mono); font-size:.92em;}
+
+/* ---------- layout ---------- */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:280px; flex-shrink:0; background:var(--bg-panel);
+  border-right:1px solid var(--border); padding:22px 16px 60px;
+  position:fixed; top:0; left:0; bottom:0; overflow-y:auto; z-index:40;
+  transition:transform .25s ease;
+}
+.sidebar-brand{display:flex; align-items:center; gap:10px; margin-bottom:22px; padding:0 6px;}
+.sidebar-brand .ticket{width:28px; height:28px; flex-shrink:0;}
+.sidebar-brand span{font-family:var(--serif); font-weight:600; font-size:1.05rem; color:var(--text);}
+.sidebar nav a{
+  display:block; padding:8px 10px; border-radius:8px; color:var(--text-dim);
+  text-decoration:none; font-size:.92rem; margin-bottom:2px; border-left:3px solid transparent;
+}
+.sidebar nav a.module-link{font-weight:700; color:var(--text); margin-top:14px; text-transform:uppercase; font-size:.76rem; letter-spacing:.06em;}
+.sidebar nav a:hover{background:var(--bg-panel-2); color:var(--text);}
+.sidebar nav a.active{background:var(--bg-panel-2); color:var(--text); border-left-color:var(--accent-restaurant);}
+.sidebar-foot{margin-top:24px; padding:12px; border-top:1px solid var(--border); font-size:.78rem; color:var(--text-faint);}
+
+.main{margin-left:280px; flex:1; min-width:0;}
+.container{max-width:880px; margin:0 auto; padding:48px 28px 120px;}
+section.block{margin-bottom:64px; scroll-margin-top:24px;}
+.eyebrow{font-family:var(--sans); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:.76rem; margin-bottom:8px;}
+
+.hamburger{
+  display:none; position:fixed; top:14px; left:14px; z-index:60;
+  width:44px; height:44px; border-radius:10px; background:var(--bg-panel-2);
+  border:1px solid var(--border); color:var(--text); align-items:center; justify-content:center;
+  font-size:1.3rem; cursor:pointer;
+}
+.sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(6,8,14,.6); z-index:35;}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 28px 36px; max-width:880px; margin:0 auto;}
+.hero-badge{display:inline-block; padding:5px 12px; border-radius:20px; background:var(--bg-panel-2); border:1px solid var(--border); font-size:.78rem; color:var(--text-dim); margin-bottom:18px;}
+.hero p.lead{font-size:1.15rem; color:var(--text-dim);}
+.module-pills{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;}
+.pill{padding:8px 14px; border-radius:10px; font-size:.85rem; font-weight:700; border:1px solid var(--border);}
+.pill-scrum{color:var(--accent-scrum); border-color:color-mix(in srgb, var(--accent-scrum) 40%, var(--border));}
+.pill-kanban{color:var(--accent-kanban); border-color:color-mix(in srgb, var(--accent-kanban) 40%, var(--border));}
+.pill-azure{color:var(--accent-azure); border-color:color-mix(in srgb, var(--accent-azure) 40%, var(--border));}
+.pill-safe{color:var(--accent-safe); border-color:color-mix(in srgb, var(--accent-safe) 40%, var(--border));}
+
+/* ---------- blocos de destaque ---------- */
+.box{border-radius:var(--radius); padding:18px 20px; margin:18px 0; border:1px solid var(--border); background:var(--bg-panel);}
+.box-title{display:flex; align-items:center; gap:8px; font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px;}
+.box-analogy{background:linear-gradient(180deg, rgba(232,115,74,.10), rgba(232,115,74,.03)); border-color:rgba(232,115,74,.35);}
+.box-analogy .box-title{color:var(--accent-restaurant);}
+.box-info{background:linear-gradient(180deg, rgba(92,147,255,.10), rgba(92,147,255,.03)); border-color:rgba(92,147,255,.35);}
+.box-info .box-title{color:var(--accent-azure);}
+.box-warn{background:linear-gradient(180deg, rgba(232,103,74,.12), rgba(232,103,74,.03)); border-color:rgba(232,103,74,.4);}
+.box-warn .box-title{color:var(--accent-warn);}
+.box-quote{border-left:3px solid var(--accent-safe); background:var(--bg-panel-2); font-style:italic;}
+.box-quote .box-title{color:var(--accent-safe);}
+.box p:last-child{margin-bottom:0;}
+
+/* ---------- tooltip termos ---------- */
+.term{border-bottom:1.5px dashed var(--text-faint); cursor:help; position:relative; color:var(--text); font-weight:600;}
+.term:hover, .term.open{color:var(--accent-restaurant); border-color:var(--accent-restaurant);}
+.term-popup{
+  display:none; position:absolute; left:0; bottom:calc(100% + 8px); width:min(320px, 80vw);
+  background:#0A0E17; border:1px solid var(--border); border-radius:10px; padding:12px 14px;
+  font-size:.85rem; font-weight:400; color:var(--text-dim); line-height:1.5; z-index:30;
+  box-shadow:0 12px 30px rgba(0,0,0,.5);
+}
+.term.open .term-popup{display:block;}
+.term-popup b{color:var(--text); font-family:var(--sans);}
+
+/* ---------- tabelas ---------- */
+table{width:100%; border-collapse:collapse; margin:16px 0; font-size:.92rem;}
+th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top;}
+th{color:var(--text-faint); font-weight:700; text-transform:uppercase; font-size:.72rem; letter-spacing:.04em;}
+td{color:var(--text-dim);}
+
+/* ---------- exercicio ---------- */
+.exercise{border:1px dashed var(--border); border-radius:var(--radius); padding:16px 18px; margin:16px 0; background:var(--bg-panel-2);}
+.exercise .num{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:var(--accent-restaurant); color:#1a0e08; font-weight:800; font-size:.85rem; margin-right:8px;}
+
+/* ---------- simuladores ---------- */
+.sim{border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-panel); padding:20px; margin:20px 0;}
+.sim-title{font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px;}
+.sim-hint{font-size:.82rem; color:var(--text-faint); margin-bottom:14px;}
+.sim-tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+.sim-tab-btn{padding:8px 14px; border-radius:8px; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text-dim); font-family:var(--sans); font-size:.85rem; font-weight:700; cursor:pointer;}
+.sim-tab-btn.active{background:var(--accent-restaurant); color:#1a0e08; border-color:var(--accent-restaurant);}
+.stepper{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+.step-btn{flex:1; min-width:110px; padding:10px 8px; text-align:center; border-radius:10px; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text-faint); font-size:.8rem; font-weight:700; cursor:pointer;}
+.step-btn.active{background:var(--accent-scrum); color:#231404; border-color:var(--accent-scrum);}
+.step-panel{background:var(--bg-panel-2); border-radius:10px; padding:16px 18px; font-size:.92rem; color:var(--text-dim);}
+.step-panel b{color:var(--text);}
+
+.board{display:grid; gap:10px; overflow-x:auto; padding-bottom:6px;}
+.board-col{background:var(--bg-panel-2); border-radius:10px; padding:10px; min-width:130px; border:1px solid var(--border);}
+.board-col-head{display:flex; justify-content:space-between; align-items:center; font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); margin-bottom:8px;}
+.wip-badge{background:var(--bg); border:1px solid var(--border); border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:.7rem;}
+.wip-badge.full{background:var(--accent-warn); border-color:var(--accent-warn); color:#2a0d05;}
+.card{background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px 9px; font-size:.78rem; margin-bottom:6px; color:var(--text); cursor:pointer;}
+.card:hover{border-color:var(--accent-kanban);}
+.board-empty{font-size:.72rem; color:var(--text-faint); text-align:center; padding:10px 0;}
+.sim-controls{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+.btn{padding:9px 16px; border-radius:8px; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text); font-family:var(--sans); font-weight:700; font-size:.85rem; cursor:pointer;}
+.btn.primary{background:var(--accent-kanban); border-color:var(--accent-kanban); color:#062522;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+.sim-msg{font-size:.82rem; margin-top:10px; min-height:18px; color:var(--accent-warn); font-weight:700;}
+
+.pyramid{display:flex; flex-direction:column; gap:6px; align-items:center; margin:18px 0;}
+.pyr-block{border-radius:8px; padding:12px 18px; text-align:center; font-weight:700; cursor:pointer; border:1px solid transparent; font-size:.9rem; color:#12070f;}
+.pyr-block small{display:block; font-weight:400; font-size:.72rem; opacity:.85; margin-top:2px;}
+.pyr-desc{background:var(--bg-panel-2); border-radius:10px; padding:14px 16px; font-size:.88rem; color:var(--text-dim); border:1px solid var(--border); margin-top:6px; min-height:50px;}
+
+.gauge-wrap{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+.wsjf-inputs{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-width:220px;}
+.wsjf-inputs label{font-size:.78rem; color:var(--text-faint); display:block; margin-bottom:4px;}
+.wsjf-inputs input[type=range]{width:100%;}
+.wsjf-result{background:var(--bg-panel-2); border-radius:12px; padding:16px 20px; text-align:center; min-width:150px; border:1px solid var(--border);}
+.wsjf-result .num{font-family:var(--serif); font-size:2.2rem; color:var(--accent-safe); font-weight:700;}
+.wsjf-result .lbl{font-size:.72rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em;}
+
+.timeline{display:flex; overflow-x:auto; gap:0; padding:10px 0;}
+.tl-item{min-width:150px; padding:0 14px; position:relative; cursor:pointer;}
+.tl-item:not(:last-child)::after{content:""; position:absolute; top:20px; right:-4px; width:100%; height:2px; background:var(--border);}
+.tl-dot{width:14px; height:14px; border-radius:50%; background:var(--bg-panel-2); border:2px solid var(--accent-safe); margin-bottom:8px;}
+.tl-item.active .tl-dot{background:var(--accent-safe);}
+.tl-label{font-size:.78rem; font-weight:700; color:var(--text-dim);}
+.tl-item.active .tl-label{color:var(--text);}
+.tl-desc{margin-top:16px; background:var(--bg-panel-2); border-radius:10px; padding:14px 16px; font-size:.88rem; color:var(--text-dim); border:1px solid var(--border);}
+
+.state-flow{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:14px 0;}
+.state-node{padding:8px 14px; border-radius:20px; font-size:.8rem; font-weight:700; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text-dim); cursor:pointer;}
+.state-node.active{background:var(--accent-azure); color:#06122e; border-color:var(--accent-azure);}
+.state-arrow{color:var(--text-faint);}
+
+/* glossario */
+.glossary-controls{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+.letter-btn{width:30px; height:30px; border-radius:6px; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text-faint); font-size:.76rem; cursor:pointer; font-weight:700;}
+.letter-btn.active{background:var(--accent-safe); border-color:var(--accent-safe); color:#160a2c;}
+.search-box{width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border); background:var(--bg-panel-2); color:var(--text); font-family:var(--sans); margin-bottom:14px;}
+.gloss-grid{display:grid; gap:10px;}
+.gloss-item{background:var(--bg-panel-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;}
+.gloss-item b{color:var(--text); font-size:.92rem;}
+.gloss-item p{margin:4px 0 0; font-size:.85rem; color:var(--text-dim);}
+.gloss-count{font-size:.78rem; color:var(--text-faint); margin-bottom:10px;}
+
+footer.credits{max-width:880px; margin:0 auto; padding:0 28px 90px; color:var(--text-faint); font-size:.82rem;}
+footer.credits a{color:var(--text-faint);}
+
+::selection{background:var(--accent-restaurant); color:#1a0e08;}
+
+.sidebar{transform:translateX(-100%);}
+.sidebar.open{transform:translateX(0);}
+.main{margin-left:0;}
+.hamburger{display:flex;}
+.sidebar-overlay.show{display:block;}
+.container, .hero, footer.credits{padding-left:18px; padding-right:18px;}
+h1{font-size:1.7rem;}
+h2{font-size:1.5rem;}
+.board{grid-template-columns:1fr !important;}
+.wsjf-inputs{grid-template-columns:1fr;}
+
+</style>
+</head>
+<body data-variant="mobile">
+<div class="app">
+
+<button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu">&#9776;</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <svg class="ticket" viewBox="0 0 24 24" fill="none"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1a1.5 1.5 0 0 0 0 3v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1a1.5 1.5 0 0 0 0-3V8Z" stroke="#E8734A" stroke-width="1.6"/><path d="M9 6v12" stroke="#E8734A" stroke-width="1.6" stroke-dasharray="2 2"/></svg>
+    <span>Curso Ágil Completo</span>
+  </div>
+  <nav id="sideNav">
+    <a href="#inicio">Boas-vindas</a>
+    <a href="#analogia">A analogia-mãe: o restaurante</a>
+    <a class="module-link" href="#m1">Módulo 1 — Scrum Guide</a>
+    <a href="#m1-oque">O que é Scrum</a>
+    <a href="#m1-teoria">Empirismo e pilares</a>
+    <a href="#m1-valores">Os 5 valores</a>
+    <a href="#m1-time">O Scrum Team</a>
+    <a href="#m1-sprint">A Sprint e seus eventos</a>
+    <a href="#m1-artefatos">Artefatos e compromissos</a>
+    <a class="module-link" href="#m2">Módulo 2 — Kanban Guide</a>
+    <a href="#m2-oque">O que é Kanban</a>
+    <a href="#m2-metodo">Método, metodologia, framework</a>
+    <a href="#m2-principios">Princípios</a>
+    <a href="#m2-praticas">6 práticas gerais</a>
+    <a href="#m2-quadro">Quadro, WIP e sistema puxado</a>
+    <a href="#m2-metricas">Métricas do Kanban</a>
+    <a href="#m2-cadencias">Cadências</a>
+    <a class="module-link" href="#m3">Módulo 3 — Azure DevOps Boards</a>
+    <a href="#m3-hierarquia">Hierarquia de itens</a>
+    <a href="#m3-campos">Definir histórias e campos</a>
+    <a href="#m3-estados">Estados do fluxo de trabalho</a>
+    <a href="#m3-quadro">Quadro e quadro de tarefas</a>
+    <a href="#m3-extra">Mapeamento, testes e valor</a>
+    <a class="module-link" href="#m4">Módulo 4 — SAFe</a>
+    <a href="#m4-oque">O que é o SAFe</a>
+    <a href="#m4-configuracoes">Configurações do framework</a>
+    <a href="#m4-eventos">Cadência: PI e eventos</a>
+    <a href="#m4-wsjf">Simulador de priorização (WSJF)</a>
+    <a href="#m4-glossario">Glossário completo do SAFe</a>
+    <a class="module-link" href="#glossario-geral">Glossário geral de termos</a>
+    <a href="#glossario-geral">Todos os termos traduzidos</a>
+    <a class="module-link" href="#referencias">Referências</a>
+    <a href="#referencias">Fontes e changelog</a>
+  </nav>
+  <div class="sidebar-foot">Conteúdo baseado no Scrum Guide 2020, no Guia Oficial do Kanban, na documentação Microsoft Learn e no Glossário SAFe — reescrito e explicado, não copiado literalmente.</div>
+</aside>
+
+<div class="hero" id="inicio">
+  <div class="hero-badge">Curso unificado &middot; 4 fontes, 1 trilha só</div>
+  <h1>Do Product Backlog ao PI Planning: o mapa completo da gestão ágil</h1>
+  <p class="lead">Este material junta, numa sequência única e sem sobreposição de conceitos, o <span class="term" data-def="Documento oficial e gratuito de Ken Schwaber e Jeff Sutherland (criadores do Scrum), publicado sob licença Creative Commons.">Scrum Guide 2020</span>, o <span class="term" data-def="Documento oficial e gratuito da Kanban University, organização mantenedora do método Kanban.">Guia Oficial do Kanban</span>, o guia da Microsoft sobre <span class="term" data-def="Azure Boards é o módulo de gestão de trabalho (backlog, quadros, sprints) dentro do Azure DevOps, a plataforma de desenvolvimento da Microsoft.">Azure Boards</span> e o <span class="term" data-def="SAFe = Scaled Agile Framework, ou 'Framework Ágil Escalado' — um conjunto de práticas da empresa Scaled Agile Inc. para aplicar agilidade em organizações grandes, com vários times.">Glossário SAFe</span>. A ideia é que, ao final, você reconheça qualquer termo que apareça numa reunião de Azure Boards, Jira ou qualquer time ágil — e saiba exatamente de onde ele vem.</p>
+  <div class="module-pills">
+    <span class="pill pill-scrum">Módulo 1 &middot; Scrum</span>
+    <span class="pill pill-kanban">Módulo 2 &middot; Kanban</span>
+    <span class="pill pill-azure">Módulo 3 &middot; Azure Boards</span>
+    <span class="pill pill-safe">Módulo 4 &middot; SAFe</span>
+  </div>
+</div>
+
+<div class="container">
+<section class="block" id="analogia">
+  <div class="eyebrow" style="color:var(--accent-restaurant)">Fio condutor do curso</div>
+  <h2>A analogia-mãe: um restaurante</h2>
+  <p>Cada método deste curso resolve um pedaço do mesmo problema: <b>como organizar um monte de trabalho que chega sem parar, com uma equipe de tamanho limitado, sem deixar nada queimar</b>. Para não trocar de metáfora a cada módulo, vamos usar sempre a mesma imagem: <b>a cozinha de um restaurante</b>. Toda vez que um conceito novo aparecer, ele vai ser ligado a essa mesma cena.</p>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p><b>O caderno de pedidos</b> da cozinha (tudo que o restaurante algum dia poderia preparar) é o <span class="term" data-def="Lista ordenada de tudo que pode agregar valor ao produto. No Scrum, é gerenciada pelo Product Owner.">Product Backlog</span>. <b>Um turno de trabalho</b> (por exemplo, o turno do almoço, com início e fim fixos) é a <span class="term" data-def="Ciclo de trabalho de duração fixa (até 1 mês) no qual a equipe Scrum transforma um pedaço do Backlog em algo pronto para uso.">Sprint</span>. <b>O painel de expedição</b> pendurado na cozinha, onde as fichas de pedido andam da esquerda para a direita conforme são preparadas, é o <span class="term" data-def="Ferramenta visual (física ou digital) que mostra o fluxo de trabalho em colunas, do início ao fim.">quadro Kanban</span>. E <b>quantas panelas o cozinheiro consegue cuidar ao mesmo tempo sem queimar nada</b> é o <span class="term" data-def="WIP = Work in Progress, 'trabalho em progresso'. É a quantidade de itens sendo trabalhados ao mesmo tempo.">limite de WIP</span>. Guarde essa cena: ela vai reaparecer em todos os módulos.</p>
+  </div>
+  <p>Mais adiante, quando chegarmos ao Azure Boards e ao SAFe, a mesma cozinha vai crescer: de "uma cozinha só" para "uma rede de restaurantes" — e você vai ver que a lógica não muda, só a escala.</p>
+</section>
+
+<section class="block" id="m1">
+  <div class="eyebrow pill-scrum" style="color:var(--accent-scrum)">Módulo 1 &middot; Fonte: Scrum Guide 2020 (Ken Schwaber e Jeff Sutherland)</div>
+  <h2>Scrum: o framework mais usado do mundo ágil</h2>
+  <p>O <span class="term" data-def="Documento oficial e gratuito de Ken Schwaber e Jeff Sutherland, publicado sob licença Creative Commons — pode ser copiado e redistribuído livremente.">Scrum Guide</span> é curto de propósito: menos de 20 páginas, porque o Scrum é, segundo seus próprios criadores, "um framework leve". Vamos cobrir 100% do conteúdo dele, só que explicado com a nossa analogia da cozinha.</p>
+
+  <h3 id="m1-oque">O que é o Scrum</h3>
+  <p>Scrum é um <span class="term" data-def="Framework = um conjunto incompleto de regras e papéis que serve de esqueleto, mas que precisa ser preenchido com práticas específicas do seu contexto. É diferente de um 'processo completo', que já vem pronto do início ao fim.">framework</span> leve que ajuda pessoas, times e organizações a gerar valor por meio de soluções adaptativas para problemas complexos. Ele não diz exatamente "como" fazer cada tarefa — ele define papéis, eventos e artefatos que orientam o relacionamento e a interação entre as pessoas.</p>
+  <p>O ciclo básico do Scrum, resumido em 4 passos pelo próprio guia:</p>
+  <div class="sim">
+    <div class="sim-title">🔁 Simulador — O ciclo básico do Scrum</div>
+    <div class="sim-hint">Clique em cada etapa para ver a explicação.</div>
+    <div class="stepper" id="scrumCycleSteps">
+      <button class="step-btn active" data-step="0">1. Ordenar o Backlog</button>
+      <button class="step-btn" data-step="1">2. Transformar em valor</button>
+      <button class="step-btn" data-step="2">3. Inspecionar e ajustar</button>
+      <button class="step-btn" data-step="3">4. Repetir</button>
+    </div>
+    <div class="step-panel" id="scrumCyclePanel"></div>
+  </div>
+  <p>Scrum é <b>propositalmente incompleto</b>: ele só define o mínimo necessário para funcionar, e é construído em cima da inteligência coletiva de quem o usa. Ele se soma às práticas que sua equipe já tem — não substitui tudo.</p>
+
+  <h3 id="m1-teoria">A teoria por trás: empirismo e os 3 pilares</h3>
+  <p>Scrum é baseado em <span class="term" data-def="Empirismo: a ideia de que o conhecimento vem da experiência prática e da observação real, não de planejamento teórico antecipado.">empirismo</span> (aprender fazendo e observando, em vez de planejar tudo antes) e em <span class="term" data-def="Lean thinking: filosofia de gestão originada na manufatura japonesa (Toyota) focada em reduzir desperdício e manter o foco no que realmente importa.">lean thinking</span> (foco no essencial, reduzindo desperdício). Isso se sustenta em três pilares, sempre nessa ordem lógica:</p>
+  <div class="box box-info">
+    <div class="box-title">ℹ️ Definição-chave</div>
+    <p><b>Transparência</b> — o trabalho e o processo precisam estar visíveis para quem faz e para quem recebe. <b>Inspeção</b> — artefatos e progresso precisam ser checados com frequência para detectar desvios. <b>Adaptação</b> — se algo saiu dos trilhos, o processo precisa ser ajustado o quanto antes.</p>
+  </div>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p>Pense num chef que deixa a porta da cozinha aberta para o salão ver o que está acontecendo (transparência), passa de mesa em mesa provando os pratos antes de servir (inspeção) e troca o tempero na hora se um prato saiu salgado demais (adaptação). Sem a porta aberta, ninguém sabe que precisa provar; sem provar, ninguém sabe que precisa ajustar.</p>
+  </div>
+
+  <h3 id="m1-valores">Os 5 valores do Scrum</h3>
+  <p>O sucesso do Scrum depende das pessoas viverem, na prática, cinco valores: <b>Compromisso, Foco, Abertura, Respeito e Coragem</b>. O time se compromete com as metas, foca no trabalho da Sprint, é aberto sobre desafios, respeita uns aos outros como profissionais capazes, e tem coragem de enfrentar problemas difíceis e fazer a coisa certa.</p>
+
+  <h3 id="m1-time">O Scrum Team e seus 3 papéis</h3>
+  <p>O Scrum Team é pequeno (tipicamente até 10 pessoas), multifuncional (tem todas as habilidades para entregar valor) e <span class="term" data-def="Autogerenciável: o time decide internamente quem faz o quê, quando e como — sem um gerente definindo as tarefas de cada um.">autogerenciável</span>. Não existem subtimes dentro dele — é uma unidade só, focada na mesma Meta do Produto.</p>
+  <div class="sim">
+    <div class="sim-title">👥 Simulador — Quem faz o quê no Scrum Team</div>
+    <div class="sim-hint">Clique em cada papel para ver suas responsabilidades.</div>
+    <div class="sim-tabs" id="rolesTabs">
+      <button class="sim-tab-btn active" data-role="po">Product Owner</button>
+      <button class="sim-tab-btn" data-role="sm">Scrum Master</button>
+      <button class="sim-tab-btn" data-role="dev">Developers</button>
+    </div>
+    <div class="step-panel" id="rolesPanel"></div>
+  </div>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p>O <span class="term" data-def="Product Owner (PO): responsável por maximizar o valor do produto e gerenciar o Product Backlog.">Product Owner</span> é quem decide o cardápio e a ordem de prioridade dos pratos no caderno de pedidos. O <span class="term" data-def="Scrum Master: responsável por garantir que o time entenda e aplique o Scrum corretamente, removendo obstáculos.">Scrum Master</span> é o maître que garante que a cozinha funcione dentro das regras da casa e resolve qualquer imprevisto que atrapalhe o serviço. Os <span class="term" data-def="Developers: no Scrum, é o termo usado para todas as pessoas que efetivamente constroem o Incremento — não se limita a programadores.">Developers</span> são os cozinheiros que efetivamente preparam os pratos.</p>
+  </div>
+
+  <h3 id="m1-sprint">A Sprint e seus 4 eventos</h3>
+  <p>A <span class="term" data-def="Sprint: ciclo de trabalho de duração fixa (1 mês ou menos) dentro do qual acontecem todos os outros eventos Scrum.">Sprint</span> é um contêiner de duração fixa (até 1 mês) para todos os outros eventos. Durante ela: nenhuma mudança que arrisque a Meta da Sprint é permitida, a qualidade não cai, e o Backlog pode ser refinado e renegociado conforme se aprende mais.</p>
+  <div class="sim">
+    <div class="sim-title">🗓️ Simulador — Os 4 eventos dentro de uma Sprint</div>
+    <div class="sim-hint">Clique em cada evento na ordem em que eles acontecem.</div>
+    <div class="stepper" id="sprintEventsSteps">
+      <button class="step-btn active" data-step="0">Sprint Planning</button>
+      <button class="step-btn" data-step="1">Daily Scrum</button>
+      <button class="step-btn" data-step="2">Sprint Review</button>
+      <button class="step-btn" data-step="3">Sprint Retrospective</button>
+    </div>
+    <div class="step-panel" id="sprintEventsPanel"></div>
+  </div>
+  <div class="box box-info">
+    <div class="box-title">ℹ️ Os 3 tópicos da Sprint Planning</div>
+    <p><b>Por quê</b> essa Sprint é valiosa (Meta da Sprint) → <b>O quê</b> pode ser feito nesta Sprint (itens selecionados do Backlog) → <b>Como</b> o trabalho escolhido será realizado (plano dos Developers). Timebox máximo: 8 horas para uma Sprint de 1 mês.</p>
+  </div>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p>A <span class="term" data-def="Daily Scrum: evento diário de 15 minutos para os Developers inspecionarem o progresso e ajustarem o plano do dia.">Daily Scrum</span> é o alinhamento rápido de 15 minutos antes de abrir a cozinha: quem está de que estação hoje, o que travou ontem. A <span class="term" data-def="Sprint Review: evento no fim da Sprint onde o time apresenta o que foi construído aos stakeholders e coleta feedback.">Sprint Review</span> é a degustação para o dono do restaurante e clientes importantes — mostra o que saiu do forno neste turno. A <span class="term" data-def="Sprint Retrospective: evento final da Sprint onde o time reflete sobre como melhorar processos, pessoas e ferramentas.">Sprint Retrospective</span> é a reunião de equipe depois do expediente para discutir o que travou o serviço e como evitar isso no próximo turno.</p>
+  </div>
+
+  <h3 id="m1-artefatos">Artefatos e seus compromissos</h3>
+  <p>Os 3 artefatos do Scrum e o "compromisso" que cada um carrega (a garantia de transparência e foco):</p>
+  <table>
+    <tr><th>Artefato</th><th>O que é</th><th>Compromisso associado</th></tr>
+    <tr><td><span class="term" data-def="Product Backlog: lista ordenada e viva de tudo que é necessário para melhorar o produto.">Product Backlog</span></td><td>Lista ordenada e viva de tudo que pode melhorar o produto — o caderno de pedidos completo.</td><td>Meta do Produto (o objetivo de longo prazo)</td></tr>
+    <tr><td><span class="term" data-def="Sprint Backlog: os itens escolhidos para a Sprint mais o plano de como entregá-los.">Sprint Backlog</span></td><td>Meta da Sprint + itens escolhidos do Backlog + plano de entrega — o cardápio deste turno.</td><td>Meta da Sprint (por que este turno importa)</td></tr>
+    <tr><td><span class="term" data-def="Incremento: um trampolim concreto e utilizável em direção à Meta do Produto, somado a todos os incrementos anteriores.">Incremento</span></td><td>Um pedaço concreto e usável de produto, somado a tudo que já foi entregue antes — o prato pronto e servível.</td><td><span class="term" data-def="Definição de Pronto (Definition of Done): critérios de qualidade que um item precisa cumprir para ser considerado realmente terminado.">Definição de Pronto</span> (o que faz um prato estar de fato pronto para servir)</td></tr>
+  </table>
+  <div class="exercise">
+    <span class="num">!</span><b>Nota final do Guia:</b> Scrum é gratuito, licenciado sob Creative Commons, e é considerado imutável na sua estrutura — implementar só partes dele não é considerado "fazer Scrum".
+  </div>
+</section>
+
+<section class="block" id="m2">
+  <div class="eyebrow" style="color:var(--accent-kanban)">Módulo 2 &middot; Fonte: Guia Oficial do Kanban (Kanban University)</div>
+  <h2>Kanban: gerenciar o fluxo de trabalho</h2>
+  <p>Enquanto o Scrum organiza o trabalho em turnos de duração fixa (Sprints), o <span class="term" data-def="Kanban: método visual para gerenciar trabalho, focado em fluxo contínuo e limites de trabalho em progresso, sem ciclos fixos obrigatórios.">Kanban</span> foca em manter um <b>fluxo contínuo</b> de trabalho, sem precisar de ciclos fechados. Os dois não competem entre si — muitas equipes usam os dois ao mesmo tempo (inclusive o Azure Boards, que veremos no Módulo 3, oferece ambos os processos prontos).</p>
+
+  <h3 id="m2-oque">O que é o Kanban</h3>
+  <p>Com Kanban você visualiza o <span class="term" data-def="Trabalho do conhecimento (knowledge work): trabalho intelectual que não é físico, como analisar dados, escrever código ou planejar um projeto — o inventário dele é 'invisível' até ser visualizado.">trabalho do conhecimento</span> — que normalmente é invisível — e como ele se move por um fluxo. Isso ajuda a gerenciar riscos e a se adaptar mais rápido às mudanças de necessidade do cliente ou do negócio.</p>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p>Numa cozinha, o trabalho de preparar pratos é meio abstrato até você pendurar o painel de expedição na parede: aí todo mundo vê, num relance, quantos pedidos estão esperando, quantos estão sendo montados e quantos já saíram. É exatamente isso que o Kanban faz com qualquer tipo de trabalho de conhecimento.</p>
+  </div>
+
+  <h3 id="m2-metodo">Método, metodologia ou framework?</h3>
+  <p>O guia faz questão de separar esses três termos, porque a confusão é comum:</p>
+  <table>
+    <tr><th>Termo</th><th>O que significa</th></tr>
+    <tr><td><span class="term" data-def="Metodologia: abordagem de definição de processo prescritiva e definida, com fluxos, funções e responsabilidades específicas de um domínio (ex: desenvolvimento de software).">Metodologia</span></td><td>Fluxos e processos prescritivos e definidos, com papéis específicos de um domínio — normalmente especializada demais para ser aplicada em qualquer contexto.</td></tr>
+    <tr><td>Framework de processo</td><td>Uma "metodologia incompleta": um conjunto de andaimes mais genérico, mas que precisa ser personalizado para cada contexto.</td></tr>
+    <tr><td>Kanban (método)</td><td>Não é nem uma coisa nem outra: é uma abordagem de gestão que se <b>soma</b> a um processo já existente, melhorando-o — nunca substituindo do zero.</td></tr>
+  </table>
+  <div class="box box-info">
+    <div class="box-title">ℹ️ Origem</div>
+    <p>O método é descrito no livro <i>Kanban: Mudança Evolucionária de Sucesso para o seu Negócio de Tecnologia</i>, de David J. Anderson (2010). Suas raízes vêm do <span class="term" data-def="Lean Manufacturing: sistema de produção enxuta desenvolvido pela Toyota, focado em eliminar desperdício.">Lean Manufacturing</span> (o sistema de produção da Toyota), mas adaptado para trabalho de conhecimento — que, ao contrário de peças físicas numa fábrica, tem inventário invisível.</p>
+  </div>
+
+  <h3 id="m2-principios">Princípios do Kanban</h3>
+  <p><b>Princípios de gestão de mudanças</b> (comuns a toda implementação): comece com o que você já faz hoje; concorde em buscar melhoria por mudança evolucionária (nunca uma reforma "big bang"); encoraje atos de liderança em todos os níveis, não só na chefia.</p>
+  <p><b>Princípios de entrega de serviços</b>: compreenda e foque nas necessidades dos clientes; gerencie o trabalho, deixando as pessoas se auto-organizarem em torno dele; revise regularmente a rede de serviços e suas políticas.</p>
+
+  <h3 id="m2-praticas">As 6 práticas gerais</h3>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia — as 6 práticas na cozinha</div>
+    <p>
+    <b>1. Visualizar</b> — pendurar o painel de expedição na parede.<br>
+    <b>2. Limitar o WIP</b> — o chef só deixa 3 pratos na chapa ao mesmo tempo, nunca 10.<br>
+    <b>3. Gerenciar o fluxo</b> — medir quanto tempo cada prato leva do pedido até a mesa.<br>
+    <b>4. Tornar as políticas explícitas</b> — a régua de "quando um prato pode sair da chapa" fica escrita na parede, não só na cabeça do chef.<br>
+    <b>5. Implementar ciclos de feedback</b> — reunião rápida no fim do turno para ver o que travou.<br>
+    <b>6. Melhorar colaborativamente, evoluir experimentalmente</b> — testar uma mudança pequena (ex: trocar a ordem das estações) e manter só se funcionar.</p>
+  </div>
+  <div class="box box-info">
+    <div class="box-title">ℹ️ Por que limitar o WIP</div>
+    <p>Um recurso 100% ocupado não significa um sistema rápido — é o oposto. Como numa rodovia lotada, quando tudo está utilizado ao máximo, nada se move rápido. O <span class="term" data-def="WIP = Work in Progress (Trabalho em Progresso). Indica quantos itens estão sendo trabalhados simultaneamente num dado momento.">WIP</span> limitado garante folga suficiente para o trabalho fluir.</p>
+  </div>
+
+  <h3>A metáfora oficial: "Kan-Bahn"</h3>
+  <p>O próprio guia usa uma metáfora rodoviária (baseada na Autobahn alemã) para ensinar os termos: o quadro é a rodovia, os itens de trabalho são veículos, o WIP limitado é o controle de acesso nos pedágios de entrada, e o "sinal para puxar" é o espaço livre à frente do seu carro. É a mesma lógica da nossa cozinha — só que em forma de trânsito.</p>
+
+  <h3>STATIK: como desenhar seu próprio sistema Kanban</h3>
+  <p><span class="term" data-def="STATIK = Systems Thinking Approach To Introducing Kanban (Abordagem de Pensamento Sistêmico para Introduzir Kanban). É um roteiro de 6 passos para desenhar um sistema Kanban do zero.">STATIK</span> é o roteiro de 6 passos (geralmente feito em workshop, de 4 horas a 4 dias) para desenhar um sistema Kanban específico para o seu contexto:</p>
+  <div class="sim">
+    <div class="sim-title">🧭 Simulador — Os 6 passos do STATIK</div>
+    <div class="sim-hint">Clique em cada passo.</div>
+    <div class="stepper" id="statikSteps">
+      <button class="step-btn active" data-step="0">1. Insatisfações</button>
+      <button class="step-btn" data-step="1">2. Demanda</button>
+      <button class="step-btn" data-step="2">3. Capacidade</button>
+      <button class="step-btn" data-step="3">4. Fluxo</button>
+      <button class="step-btn" data-step="4">5. Classes de serviço</button>
+      <button class="step-btn" data-step="5">6. Desenhar o quadro</button>
+    </div>
+    <div class="step-panel" id="statikPanel"></div>
+  </div>
+
+  <h3 id="m2-quadro">Quadro Kanban, limite de WIP e sistema puxado</h3>
+  <p>Num quadro, o trabalho entra pela esquerda e sai pela direita conforme o valor é entregue. Cada coluna representa uma etapa do fluxo real de trabalho (não uma etapa desejada). O <span class="term" data-def="Sistema puxado (pull system): modelo em que um novo item só avança quando há capacidade livre à frente — o oposto do sistema empurrado, em que o trabalho é agendado independente da capacidade disponível.">sistema puxado</span> é o coração do método: um item só avança quando abre espaço à frente, nunca por agendamento forçado.</p>
+  <p>Agora é sua vez de operar um quadro Kanban de verdade — teste o que acontece quando uma coluna atinge o limite de WIP:</p>
+
+  <div class="sim">
+    <div class="sim-title">🧑‍🍳 Simulador — Quadro Kanban da cozinha (WIP limitado)</div>
+    <div class="sim-hint">Clique em <b>"+ Novo pedido"</b> para criar uma ficha. Depois clique numa ficha para puxá-la para a próxima coluna. Repare que "Fritando" tem limite de WIP = 2: se estiver cheia, a ficha fica bloqueada até abrir espaço.</div>
+    <div class="board" id="kanbanBoard" style="grid-template-columns:repeat(4,1fr);"></div>
+    <div class="sim-controls">
+      <button class="btn primary" id="kbAddBtn">+ Novo pedido</button>
+      <button class="btn" id="kbResetBtn">Reiniciar quadro</button>
+    </div>
+    <div class="sim-msg" id="kbMsg"></div>
+  </div>
+
+  <h3 id="m2-metricas">As 3 métricas básicas do Kanban</h3>
+  <table>
+    <tr><th>Métrica</th><th>O que mede</th></tr>
+    <tr><td><span class="term" data-def="Lead Time: tempo total que um item leva desde o momento em que entra no sistema (ponto de comprometimento) até a conclusão.">Lead Time</span></td><td>Quanto tempo um pedido leva desde que entrou na cozinha até chegar pronto na mesa.</td></tr>
+    <tr><td><span class="term" data-def="Delivery Rate (Taxa de Entrega): número de itens de trabalho concluídos por unidade de tempo.">Delivery Rate</span> (Taxa de entrega)</td><td>Quantos pratos saem da cozinha por hora, por turno, etc.</td></tr>
+    <tr><td>WIP</td><td>Quantos pedidos estão sendo trabalhados neste exato momento.</td></tr>
+  </table>
+  <p>Essas métricas alimentam três gráficos citados no guia: o <b>run chart</b> (Lead Time ao longo do tempo, para ver tendências), o <b>gráfico de distribuição</b> (com que frequência cada faixa de tempo ocorre) e o <b>Cumulative Flow Diagram — CFD</b> (diagrama de fluxo cumulativo, que mostra visualmente onde o trabalho está se acumulando/travando).</p>
+
+  <h3 id="m2-cadencias">Cadências: os ritmos de reunião do Kanban</h3>
+  <table>
+    <tr><th>Cadência</th><th>Frequência típica</th><th>Propósito</th></tr>
+    <tr><td>Team Kanban Meeting</td><td>Diária</td><td>Acompanhar o fluxo (não as pessoas): o que pode ser entregue rápido, o que travou.</td></tr>
+    <tr><td>Team Retrospective</td><td>Quinzenal/mensal</td><td>Refletir sobre como o time gerencia o trabalho e como melhorar.</td></tr>
+    <tr><td>Internal Team Replenishment</td><td>Semanal / sob demanda</td><td>Selecionar os próximos itens a entrar no sistema.</td></tr>
+  </table>
+  <div class="box box-warn">
+    <div class="box-title">⚠️ Atenção</div>
+    <p>O guia é explícito: <b>não existe "certo ou errado" no Kanban</b>. Um quadro simples de 5 colunas para um time só e um conjunto de quadros interligados para um departamento inteiro são, ambos, usos corretos do método — a diferença é o escopo de aplicação.</p>
+  </div>
+</section>
+
+<section class="block" id="m3">
+  <div class="eyebrow" style="color:var(--accent-azure)">Módulo 3 &middot; Fonte: Microsoft Learn — Azure Boards</div>
+  <h2>Azure Boards: onde Scrum e Kanban viram telas de verdade</h2>
+  <p>O <span class="term" data-def="Azure DevOps: plataforma da Microsoft para gestão de projetos, código-fonte, pipelines de build/deploy e testes. Concorrente direto do Jira (Atlassian).">Azure DevOps</span> é a ferramenta em que os conceitos dos Módulos 1 e 2 ganham forma prática. O <span class="term" data-def="Azure Boards: módulo do Azure DevOps dedicado a backlog, quadros (boards) e acompanhamento de itens de trabalho.">Azure Boards</span> usa o <span class="term" data-def="Processo Agile: um dos modelos de processo pré-configurados do Azure Boards, com hierarquia Epic > Feature > User Story > Task.">processo Agile</span> — que é essencialmente Scrum + Kanban aplicados na prática, com uma hierarquia própria de itens de trabalho.</p>
+
+  <h3 id="m3-hierarquia">A hierarquia de itens de trabalho (WITs)</h3>
+  <p><span class="term" data-def="WIT = Work Item Type (Tipo de Item de Trabalho). É a categoria de cada item cadastrado no Azure Boards: Epic, Feature, User Story, Task, Bug ou Issue.">WITs</span> ajudam a equipe a planejar, priorizar e acompanhar o progresso. Eles formam uma pirâmide, do mais amplo para o mais específico:</p>
+  <div class="sim">
+    <div class="sim-title">🏗️ Simulador — Hierarquia de itens no Azure Boards</div>
+    <div class="sim-hint">Clique em cada nível da pirâmide para ver o exemplo (usando nossa cozinha).</div>
+    <div class="pyramid" id="azurePyramid"></div>
+    <div class="pyr-desc" id="azurePyrDesc"></div>
+  </div>
+  <p>Além desses, existem dois tipos configuráveis: <span class="term" data-def="Bug: item de trabalho usado para rastrear defeitos de código encontrados durante o desenvolvimento ou testes.">Bug</span> (defeito de código) e <span class="term" data-def="Issue: item usado para rastrear bloqueios ou impedimentos que atrapalham o progresso, sem ser necessariamente um defeito de código.">Issue</span> (um bloqueio/impedimento, sem ser necessariamente um erro de código).</p>
+
+  <h3 id="m3-campos">Definir histórias de usuário e seus campos</h3>
+  <p>O Product Owner normalmente define e prioriza as <span class="term" data-def="User Story (História de Usuário): descrição curta, escrita do ponto de vista do usuário, de uma pequena parte de funcionalidade desejada.">User Stories</span>; a equipe depois estima o esforço. Os principais campos usados no formulário de uma história:</p>
+  <table>
+    <tr><th>Campo</th><th>Uso</th></tr>
+    <tr><td>Description</td><td>Foca no objetivo do recurso: o que o usuário quer fazer e por quê — não em como construir.</td></tr>
+    <tr><td>Acceptance Criteria</td><td>Critérios que precisam ser atendidos antes de considerar o item fechado.</td></tr>
+    <tr><td>Story Points</td><td>Estimativa de esforço numa unidade que a equipe escolher — alimenta gráficos de previsão e velocidade.</td></tr>
+    <tr><td>Priority</td><td>1 = não pode lançar sem isso; 2 = não pode lançar sem isso, mas não é urgente; 3 = opcional.</td></tr>
+    <tr><td>Risk</td><td>1-Alta, 2-Média, 3-Baixa — incerteza sobre a conclusão bem-sucedida.</td></tr>
+    <tr><td>Área de Valor</td><td>Arquitetura (serviços técnicos) ou Negócios (valor direto ao cliente — é o padrão).</td></tr>
+  </table>
+
+  <h3 id="m3-estados">Estados do fluxo de trabalho Agile</h3>
+  <p>Cada tipo de item tem seu próprio ciclo de estados. Compare os três:</p>
+  <div class="sim">
+    <div class="sim-title">🔄 Simulador — Estados de fluxo por tipo de item</div>
+    <div class="sim-tabs" id="stateTabs">
+      <button class="sim-tab-btn active" data-wit="story">User Story</button>
+      <button class="sim-tab-btn" data-wit="bug">Bug</button>
+      <button class="sim-tab-btn" data-wit="task">Task</button>
+    </div>
+    <div class="state-flow" id="stateFlow"></div>
+    <div class="step-panel" id="statePanel"></div>
+  </div>
+  <p>Progressão típica de uma User Story: o Product Owner cria em <b>Novo</b> → a equipe muda para <b>Ativo</b> quando decide fazer na Sprint → passa para <b>Resolvido</b> quando as tarefas e testes de unidade terminam → vai para <b>Fechado</b> quando o PO confirma que os Critérios de Aceitação e testes de aceitação passaram.</p>
+
+  <h3 id="m3-quadro">Quadro e quadro de tarefas</h3>
+  <p>O <b>Board</b> (quadro) atualiza o status das histórias arrastando cartões entre colunas — exatamente como o quadro Kanban do Módulo 2. O <b>Taskboard</b> (quadro de tarefas) faz o mesmo, mas no nível das tarefas dentro de uma Sprint. Cada tarefa tem os campos <b>Estimativa Original</b>, <b>Trabalho Restante</b> e <b>Trabalho Concluído</b> — usados para gerar o gráfico de Sprint Burndown (quanto trabalho falta, dia a dia).</p>
+
+  <h3 id="m3-extra">Mapeamento para features, testes e valor comercial</h3>
+  <p>Para ter visão de portfólio, Product Owners mapeiam <b>User Stories</b> para <b>Features</b> (o mesmo relacionamento pai/filho da pirâmide acima). O progresso de testes é acompanhado vinculando <b>Test Cases</b> a histórias e bugs. O campo <b>Priority</b> diferencia o valor comercial relativo, e o campo interno <b>Stack Rank</b> guarda a ordem exata em que os itens aparecem no backlog (atualizado automaticamente conforme você arrasta os itens na tela).</p>
+  <div class="box box-info">
+    <div class="box-title">ℹ️ Campos comuns a quase todo item</div>
+    <p><b>Title</b> (único campo obrigatório para todos os tipos), <b>Atribuído a</b>, <b>State</b>, <b>Reason</b> (motivo do estado atual), <b>Area</b> (caminho da área/equipe), <b>Iteration</b> (sprint), além das abas <b>Histórico</b> (log de alterações), <b>Links</b> (relações com outros itens) e <b>Anexos</b>.</p>
+  </div>
+</section>
+
+<section class="block" id="m4">
+  <div class="eyebrow" style="color:var(--accent-safe)">Módulo 4 &middot; Fonte: Glossário SAFe (Scaled Agile Inc.)</div>
+  <h2>SAFe: quando não é uma cozinha, é uma rede de restaurantes</h2>
+  <p>O <span class="term" data-def="SAFe = Scaled Agile Framework. Framework da empresa Scaled Agile Inc. para aplicar Lean, Ágil e DevOps em organizações grandes, com muitos times trabalhando juntos.">SAFe</span> entra quando um único time Scrum ou Kanban não dá conta: são várias equipes, vários produtos, e é preciso coordenar tudo isso sem virar caos. É o framework de <span class="term" data-def="Business Agility (Agilidade Empresarial): capacidade de uma organização competir e prosperar respondendo rapidamente a mudanças de mercado.">agilidade de negócio</span> mais usado do mundo hoje.</p>
+
+  <h3 id="m4-oque">O que é o SAFe</h3>
+  <p>SAFe integra o poder do <span class="term" data-def="Lean: filosofia de gestão focada em eliminar desperdício e otimizar o fluxo de valor, com origem na manufatura japonesa.">Lean</span>, do Ágil e do <span class="term" data-def="DevOps: cultura e práticas que unem desenvolvimento (Dev) e operação (Ops) para entregar software de forma integrada e automatizada.">DevOps</span> num sistema operacional único, ajudando organizações a entregar produtos mais rápido, com mais previsibilidade e qualidade.</p>
+  <div class="box box-analogy">
+    <div class="box-title">🍽️ Analogia</div>
+    <p>Se um restaurante é um time Scrum, o SAFe é a <b>rede de restaurantes</b>: várias cozinhas (<span class="term" data-def="Agile Release Train (ART): um trem de times ágeis de longa duração que entrega soluções continuamente. É a principal unidade organizacional do SAFe.">Agile Release Trains, ou ARTs</span>) seguindo o mesmo cardápio-mestre, coordenadas por uma gerência central (<span class="term" data-def="Portfólio SAFe: fornece estratégia, financiamento de investimentos e governança Lean para uma ou mais cadeias de valor.">Portfólio</span>), com um calendário comum de reposição de estoque e degustações (<span class="term" data-def="Planning Interval (PI): um timebox baseado em cadência (geralmente 8 a 12 semanas) no qual os ARTs entregam valor contínuo.">Planning Interval, ou PI</span>).</p>
+  </div>
+
+  <h3 id="m4-configuracoes">A hierarquia de configurações do SAFe</h3>
+  <div class="sim">
+    <div class="sim-title">🏢 Simulador — Da equipe única à rede completa</div>
+    <div class="sim-hint">Clique em cada nível.</div>
+    <div class="pyramid" id="safePyramid"></div>
+    <div class="pyr-desc" id="safePyrDesc"></div>
+  </div>
+
+  <h3 id="m4-eventos">A cadência do SAFe: o PI e seus eventos</h3>
+  <p>Assim como a Sprint organiza o tempo no Scrum, o <b>Planning Interval (PI)</b> organiza o tempo no SAFe — só que na escala de vários times juntos.</p>
+  <div class="sim">
+    <div class="sim-title">📅 Simulador — Linha do tempo de um PI</div>
+    <div class="sim-hint">Clique em cada marco.</div>
+    <div class="timeline" id="piTimeline"></div>
+    <div class="tl-desc" id="piDesc"></div>
+  </div>
+
+  <h3 id="m4-wsjf">Simulador — Priorização por WSJF</h3>
+  <p><span class="term" data-def="WSJF = Weighted Shortest Job First (Trabalho Mais Curto Ponderado Primeiro). Modelo de priorização Lean: divide o custo do atraso pela duração do trabalho — quanto maior o resultado, maior a prioridade.">WSJF</span> é como o SAFe decide o que priorizar: quanto maior o "custo de esperar" e quanto menor o tamanho do trabalho, mais prioritário ele é. Mexa nos controles abaixo e veja o resultado mudar ao vivo:</p>
+  <div class="sim">
+    <div class="sim-title">🧮 Calculadora de WSJF</div>
+    <div class="sim-hint">WSJF = Custo do Atraso ÷ Tamanho do Trabalho (Job Size)</div>
+    <div class="gauge-wrap">
+      <div class="wsjf-inputs">
+        <div>
+          <label>Custo do Atraso (quanto custa esperar) — <span id="wsjfCodVal">50</span></label>
+          <input type="range" id="wsjfCod" min="1" max="100" value="50">
+        </div>
+        <div>
+          <label>Tamanho do trabalho (Job Size) — <span id="wsjfSizeVal">10</span></label>
+          <input type="range" id="wsjfSize" min="1" max="50" value="10">
+        </div>
+      </div>
+      <div class="wsjf-result">
+        <div class="num" id="wsjfResult">5.0</div>
+        <div class="lbl">Pontuação WSJF</div>
+      </div>
+    </div>
+    <div class="step-panel" id="wsjfMsg" style="margin-top:12px;"></div>
+  </div>
+
+  <h3 id="m4-glossario">Glossário completo do SAFe</h3>
+  <p>O glossário oficial do SAFe tem mais de 100 termos. Em vez de uma lista corrida, aqui está uma versão pesquisável — exatamente os mesmos termos do documento que você enviou, reescritos em português simples:</p>
+  <div class="sim">
+    <input type="text" class="search-box" id="safeSearch" placeholder="Buscar termo do SAFe (ex: PI, ART, WSJF, Lean Budget...)">
+    <div class="glossary-controls" id="safeLetters"></div>
+    <div class="gloss-count" id="safeCount"></div>
+    <div class="gloss-grid" id="safeGlossGrid"></div>
+  </div>
+</section>
+
+<section class="block" id="glossario-geral">
+  <div class="eyebrow" style="color:var(--accent-restaurant)">Glossário geral</div>
+  <h2>Todos os termos técnicos traduzidos, num só lugar</h2>
+  <p>Esta lista é <b>gerada automaticamente</b> a partir de todos os termos sublinhados (tracejado) que apareceram ao longo do curso — nenhum termo foi digitado duas vezes. Use a busca para achar rápido.</p>
+  <input type="text" class="search-box" id="genSearch" placeholder="Buscar qualquer termo do curso...">
+  <div class="gloss-count" id="genCount"></div>
+  <div class="gloss-grid" id="genGlossGrid"></div>
+</section>
+
+<section class="block" id="referencias">
+  <div class="eyebrow" style="color:var(--accent-restaurant)">Referências e transparência</div>
+  <h2>De onde veio cada coisa</h2>
+  <p>Por respeito a direitos autorais, nenhum trecho dos documentos originais foi copiado literalmente — tudo foi reescrito com nossas próprias palavras e organizado com a analogia do restaurante. Para o texto oficial, completo e definitivo, use sempre as fontes abaixo:</p>
+  <table>
+    <tr><th>Módulo</th><th>Fonte oficial</th></tr>
+    <tr><td>Scrum</td><td><a href="https://scrumguides.org/download.html" target="_blank" rel="noopener">Scrum Guide 2020 — scrumguides.org</a> (Ken Schwaber e Jeff Sutherland, licença Creative Commons)</td></tr>
+    <tr><td>Kanban</td><td><a href="https://kanban.university/wp-content/uploads/2021/04/The-Official-Kanban-Guide_Portuguese_A4.pdf" target="_blank" rel="noopener">The Official Kanban Guide — Kanban University</a></td></tr>
+    <tr><td>Azure Boards</td><td><a href="https://learn.microsoft.com/pt-br/azure/devops/boards/work-items/guidance/agile-process-workflow?view=azure-devops" target="_blank" rel="noopener">Fluxo de trabalho Agile no Azure Boards — Microsoft Learn</a></td></tr>
+    <tr><td>SAFe</td><td><a href="https://framework.scaledagile.com/glossary?lang=pt-br" target="_blank" rel="noopener">Glossário SAFe — Scaled Agile Inc.</a> (© Scaled Agile, Inc. — SAFe é marca registrada da Scaled Agile, Inc.)</td></tr>
+  </table>
+  <div class="box box-warn">
+    <div class="box-title">⚠️ Sobre "User Story Mapping" e "SAFe Distilled"</div>
+    <p>Esses dois livros (Jeff Patton e Richard Knaster/Dean Leffingwell) são obras comerciais sem PDF gratuito legal disponível. Este curso já cobre os conceitos-chave de mapeamento de histórias (Épico → Feature → User Story → Task, no Módulo 3) e de escalonamento SAFe (Módulo 4) com nossas próprias palavras. Para o aprofundamento autoral completo dos livros, a recomendação é a compra legal.</p>
+  </div>
+  <h3>Changelog deste material</h3>
+  <ul style="color:var(--text-dim)">
+    <li>Simuladores criados: ciclo do Scrum (stepper), papéis do Scrum Team (toggle), eventos da Sprint (stepper), quadro Kanban interativo com limite de WIP (simulador de fluxo com bloqueio), passos do STATIK (stepper), pirâmide de hierarquia Azure Boards (blocos clicáveis), estados de fluxo por tipo de item (toggle + fluxo de estados), pirâmide de configurações SAFe (blocos clicáveis), linha do tempo do PI (timeline clicável), calculadora de WSJF (interativo com sliders), glossário SAFe pesquisável e glossário geral auto-gerado.</li>
+    <li>Cobertura: 100% dos tópicos identificados nos 4 documentos-fonte enviados, reescritos e sem reprodução literal de texto protegido.</li>
+    <li>Duas versões entregues: desktop (sidebar fixa) e mobile (menu retrátil, tipografia maior, quadros em coluna única).</li>
+  </ul>
+</section>
+
+</div>
+<footer class="credits">
+  Curso gerado a partir de fontes oficiais e gratuitas: Scrum Guide (scrumguides.org), Kanban University, Microsoft Learn e Scaled Agile Inc. Conteúdo reescrito para fins de estudo — SAFe® e Scaled Agile Framework® são marcas registradas da Scaled Agile, Inc.
+</footer>
+</div>
+
+<script>
+var SAFE_TERMS_DATA = [["Agile Product Delivery (APD)", "Competencia central: abordagem centrada no cliente para definir, construir e entregar produtos continuamente."], ["Agile Release Train (ART)", "Equipe de times ageis de longa duracao que desenvolve e entrega solucoes de forma incremental e continua."], ["Equipes Ageis (Times Ageis)", "Grupo multifuncional de ate cerca de 10 pessoas com todas as habilidades para entregar valor ao cliente."], ["Inteligencia Artificial (IA)", "Maquinas capazes de executar tarefas que normalmente exigiriam inteligencia humana; aplicavel em todos os niveis do SAFe."], ["Pista de Pouso Arquitetonica (Architectural Runway)", "Infraestrutura tecnica ja existente que permite implementar novas funcionalidades sem grande atraso ou retrabalho."], ["Backlog do ART", "Sistema Kanban usado para capturar e gerenciar as Capabilities e Habilitadores de um ART."], ["Fluxo do ART", "Estado em que um ART entrega um fluxo continuo de recursos relevantes para o cliente."], ["Big Data", "Praticas para gerenciar e extrair valor de grandes volumes de dados na tomada de decisao."], ["Qualidade Embutida (Built-in Quality)", "Conjunto de praticas que garante que o trabalho de negocio e tecnologia atenda aos padroes de qualidade."], ["Agilidade Empresarial (Business Agility)", "Capacidade de competir e prosperar respondendo rapido as mudancas de mercado com solucoes inovadoras."], ["Negocios e Tecnologia", "Padroes que aplicam os principios do SAFe em toda a organizacao, unindo areas de negocio e tecnologia."], ["Business Owners (BOs)", "Stakeholders-chave de um ART com responsabilidade principal pelo retorno sobre investimento e governanca."], ["Valor de Negocio", "Conceito multidimensional do que e mais importante para a organizacao, orientando decisoes em todos os niveis."], ["CALMR", "Mentalidade DevOps que direciona o ART para entrega continua: Cultura, Automacao, Fluxo Enxuto, Medicao e Recuperacao."], ["Capabilities", "Funcionalidade de grande porte, dimensionada para um PI, cuja implementacao normalmente envolve varios ARTs."], ["Nuvem (Cloud)", "Servicos virtuais de processamento e armazenamento sob demanda usados para infraestrutura escalavel."], ["Comunidades de Pratica (CoPs)", "Grupos organizados de pessoas com interesse comum que compartilham conhecimento tecnico regularmente."], ["Conformidade", "Estrategia e atividades que garantem que o desenvolvimento atenda a normas regulatorias e de qualidade."], ["Continuous Delivery Pipeline (CDP)", "Fluxos de trabalho e automacao que levam uma nova funcionalidade da ideia ate a entrega de valor sob demanda."], ["Continuous Deployment (CD)", "Automatiza a migracao de novas funcionalidades do ambiente de teste para producao, prontas para lancamento."], ["Continuous Exploration (CE)", "Fase que explora continuamente o mercado e o cliente para definir visao, roadmap e conjunto de features."], ["Continuous Integration (CI)", "Etapa em que novas funcionalidades sao desenvolvidas, testadas e integradas continuamente."], ["Continuous Learning Culture (CLC)", "Competencia que estimula individuos e a organizacao a ampliar continuamente conhecimento e desempenho."], ["Coordinate and Deliver", "Praticas que Solution Trains usam para manter alinhamento e entregar valor continuamente a clientes de solucoes grandes."], ["Valores Fundamentais (Core Values)", "Os quatro pilares de crenca do SAFe: alinhamento, transparencia, respeito pelas pessoas e melhoria continua."], ["Cliente (Customer)", "O principal beneficiario do valor criado e entregue pelas cadeias de valor de um portfolio."], ["Centralizacao no Cliente (Customer Centricity)", "Mentalidade focada em criar experiencias positivas para o cliente em todos os produtos e servicos."], ["Design Thinking", "Processo de desenvolvimento centrado no cliente, criando produtos desejaveis, viaveis e sustentaveis."], ["Cadeia de Valor de Desenvolvimento (DVS)", "Sequencia de atividades necessarias para transformar uma hipotese de negocio em solucao entregue ao cliente."], ["DevOps", "Mentalidade, cultura e conjunto de praticas tecnicas que integram e automatizam desenvolvimento e operacao."], ["Habilitadores (Enablers)", "Itens de backlog que ampliam a pista arquitetonica ou melhoram o desempenho da cadeia de valor."], ["Organizacao (Enterprise)", "A entidade corporativa a qual cada Portfolio SAFe pertence."], ["Enterprise Architect", "Responsavel por estabelecer tecnologia, visao, estrategia e roadmap tecnologico do portfolio."], ["Enterprise Solution Delivery (ESD)", "Praticas para especificar, desenvolver e evoluir os maiores e mais sofisticados sistemas do mundo."], ["Proprietario de Epico (Epic Owner)", "Responsavel por coordenar um Epico ao longo de todo o sistema de backlog do portfolio."], ["Epico (Epic)", "Uma iniciativa significativa de desenvolvimento de solucao — o maior nivel de trabalho no SAFe."], ["Essential SAFe", "A configuracao minima do framework: os elementos essenciais para um ART entregar solucoes."], ["Features", "Funcionalidade que entrega valor de negocio ao cliente, dimensionada para ser entregue por um ART em um PI."], ["Feedback", "Sistemas de avaliacao que permitem troca continua de informacoes para melhorar produtos, servicos e processos."], ["Iteracao de Inovacao e Planejamento (IP)", "Iteracao especial a cada PI, com buffer de tempo para inovacao, aprendizado, PI Planning e Inspect & Adapt."], ["Inspect & Adapt (I&A)", "Evento no fim de cada PI onde o estado da solucao e avaliado e melhorias sao identificadas via workshop."], ["Iteracao", "Timebox de duracao fixa no qual times ageis entregam valor incremental para o cliente."], ["Planejamento da Iteracao", "Evento em que o time define quanto do backlog consegue entregar na proxima iteracao."], ["Retrospectiva da Iteracao", "Evento em que o time discute os resultados da iteracao e formas de melhorar."], ["Revisao da Iteracao", "Evento em que o time inspeciona o incremento entregue e ajusta o backlog."], ["Large Solution SAFe", "Configuracao para organizacoes que constroem solucoes grandes e complexas, sem considerar o nivel de portfolio."], ["Lean Budget Guardrails", "Politicas e praticas de orcamento, gastos e governanca para um portfolio especifico."], ["Lean Budgets", "Abordagem de financiamento que investe em cadeias de valor em vez de projetos individuais."], ["Lean Portfolio Management (LPM)", "Competencia que alinha estrategia e execucao no financiamento, operacoes ageis e governanca do portfolio."], ["Lean UX", "Abordagem que foca em aprendizagem iterativa e experiencia do usuario em vez de um design teoricamente perfeito."], ["Lideranca Lean-Agile (LAL)", "Competencia que descreve como lideres sustentam a mudanca organizacional e empoderam os times."], ["Mindset Lean-Agile", "Combinacao de crencas e atitudes que unem o pensamento Lean com os valores do Manifesto Agil."], ["Medir e Crescer (Measure and Grow)", "Abordagem para avaliar o progresso rumo a agilidade de negocio e definir acoes de melhoria."], ["Model-Based Systems Engineering (MBSE)", "Pratica de desenvolver modelos de sistemas relacionados para definir, simular e documentar um sistema."], ["Requisitos Nao Funcionais (NFRs)", "Qualidades do sistema (como desempenho e seguranca) que restringem o design da solucao."], ["Objetivos e Resultados-Chave (OKRs)", "Framework colaborativo para estabelecer metas claras e resultados mensuraveis."], ["Cadeia de Valor Operacional (OVS)", "Sequencia de atividades necessarias para entregar um produto ou servico final ao cliente."], ["Agilidade Organizacional (OA)", "Como pessoas e times em toda a organizacao otimizam processos e se adaptam rapido a novas oportunidades."], ["Objetivos do PI", "Metas de negocio e tecnicas que times e ARTs pretendem alcancar no proximo Planning Interval."], ["PI Planning", "Evento de cadencia para todo o ART, que alinha times e stakeholders em torno de uma visao compartilhada."], ["Planning Interval (PI)", "Timebox baseado em cadencia (tipicamente 8 a 12 semanas) no qual os ARTs entregam valor continuo."], ["Portfolio", "Conjunto de cadeias de valor que entrega solucoes valiosas sob um modelo comum de financiamento e governanca."], ["Backlog do Portfolio", "Sistema Kanban usado para capturar e gerenciar epicos de negocio e habilitadores do portfolio."], ["Fluxo do Portfolio", "Estado em que o Lean Portfolio Management entrega um fluxo continuo de novos epicos aos ARTs."], ["Lideranca do Portfolio", "O time com maior responsabilidade de decisao e financeira sobre um Portfolio SAFe."], ["Portfolio SAFe", "Configuracao que fornece estrategia, financiamento e governanca Lean para uma ou mais cadeias de valor."], ["Visao do Portfolio", "Descricao do estado futuro desejado das cadeias de valor e solucoes de um portfolio."], ["Planejamento Previo (Pre-Plan)", "Atividades que preparam os ARTs de um Solution Train antes do PI Planning."], ["Inovacao de Produtos", "Processo continuo de criar novos produtos ou aprimorar os existentes conforme o mercado muda."], ["Product Management", "Funcao responsavel por definir solucoes desejaveis e viaveis, apoiando o ciclo de vida do produto."], ["Product Owner (PO)", "Membro do time responsavel por maximizar o valor entregue, alinhando o backlog as necessidades do cliente."], ["Liberacao Sob Demanda (Release on Demand)", "Entrega de novas funcionalidades imediatamente ou de forma incremental, conforme a necessidade do negocio."], ["Release Train Engineer (RTE)", "Lider servidor e coach do ART que facilita seus processos e eventos."], ["Roadmap", "Agenda de eventos e marcos que comunica as entregas planejadas de uma solucao ao longo do tempo."], ["SAFe", "O framework lider para agilidade de negocios, unindo Lean, Agil e DevOps num sistema operacional unico."], ["SAFe for Government", "Adaptacao do SAFe com praticas voltadas para organizacoes do setor publico."], ["SAFe Implementation Roadmap", "Serie de artigos que descrevem os passos ordenados para uma implementacao SAFe bem-sucedida."], ["Principios Lean-Agile do SAFe", "Os dez principios economicos e imutaveis que fundamentam os papeis e praticas do framework."], ["SAFe Practice Consultants (SPCs)", "Agentes de mudanca certificados que combinam conhecimento tecnico do SAFe com foco em melhoria continua."], ["SAFe Scrum", "Aplicacao do metodo Scrum por times dentro de um ART, usando iteracoes e eventos Scrum."], ["SAFe Team Kanban", "Aplicacao do metodo Kanban por times dentro de um ART, com foco em fluxo continuo."], ["Scrum Master / Team Coach (SM/TC)", "Lider servidor e coach de um time agil dentro do SAFe, facilitando eventos e apoiando a entrega."], ["Design Baseado no Conjunto (SBD)", "Pratica que mantem multiplas opcoes de design em aberto pelo maior tempo possivel."], ["Servicos Compartilhados", "Papeis e especialistas necessarios ao sucesso de um ART, mas nao dedicados em tempo integral."], ["Solucao (Solution)", "Produto, sistema ou servico que entrega valor ao cliente, interno ou externo a organizacao."], ["Solution Architect", "Responsavel por definir e comunicar a visao tecnica compartilhada de um Solution Train."], ["Solution Context", "Identifica os aspectos essenciais do ambiente em que uma solucao atua."], ["Solution Demo", "Visao integrada das contribuicoes de multiplos ARTs, apresentada para coletar evidencias e feedback."], ["Solution Intent", "Repositorio que armazena e comunica o conhecimento do comportamento atual e pretendido da solucao."], ["Solution Management", "Funcao responsavel por definir grandes solucoes viaveis, desejaveis e sustentaveis."], ["Solution Train", "Estrutura organizacional que coordena varios ARTs e fornecedores para criar solucoes grandes."], ["Backlog do Solution Train", "Sistema Kanban para gerenciar Capabilities e Habilitadores de uma solucao grande."], ["Solution Train Engineer (STE)", "Lider servidor que coordena o trabalho de multiplos ARTs e fornecedores num Solution Train."], ["Fluxo do Solution Train", "Estado em que um Solution Train entrega um fluxo continuo de Capabilities relevantes ao cliente."], ["Visao da Solucao", "Representa o estado futuro desejado da solucao que esta sendo desenvolvida."], ["Historias (Stories)", "Descricoes curtas, escritas do ponto de vista do usuario, de uma pequena parte da funcionalidade desejada."], ["Orcamento Participativo (PB)", "Processo colaborativo para alocar o orcamento do portfolio entre suas cadeias de valor."], ["Temas Estrategicos", "Objetivos de negocio de nivel de portfolio que fornecem vantagem competitiva e orientam decisoes."], ["Fornecedor (Supplier)", "Organizacao interna ou externa que entrega componentes ou servicos para os ARTs."], ["System Architect", "Responsavel por definir e comunicar a visao tecnica compartilhada das solucoes de um ART."], ["System Demo", "Visao integrada das novas features entregues por todos os times de um ART numa iteracao."], ["System Team", "Time agil especializado que apoia a infraestrutura e as ferramentas do ambiente de desenvolvimento agil."], ["Team and Technical Agility (TTA)", "Habilidades e praticas essenciais que os times ageis usam para criar solucoes de alta qualidade."], ["Backlog do Time (Team Backlog)", "Sistema Kanban usado para capturar historias de usuario e habilitadores de um time."], ["Fluxo do Time", "Estado em que um time agil entrega um fluxo continuo de valor ao cliente."], ["Coordenacao das Cadeias de Valor", "Como gerenciar dependencias entre cadeias de valor e aproveitar oportunidades entre elas."], ["KPIs de Cadeias de Valor", "Medidas quantificaveis usadas para avaliar o desempenho de uma cadeia de valor."], ["Value Stream Management (VSM)", "Disciplina tecnica e de lideranca que maximiza o fluxo de valor de ponta a ponta."], ["Weighted Shortest Job First (WSJF)", "Modelo de priorizacao que divide o custo do atraso pelo tamanho do trabalho, para gerar o maior valor economico."]];
+
+// ===================== Sidebar / Hamburger =====================
+(function(){
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  var btn = document.getElementById('hamburgerBtn');
+  function openSb(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSb(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  if(btn){ btn.addEventListener('click', function(){
+    if(sidebar.classList.contains('open')) closeSb(); else openSb();
+  });}
+  if(overlay){ overlay.addEventListener('click', closeSb); }
+  document.querySelectorAll('#sideNav a').forEach(function(a){
+    a.addEventListener('click', function(){ if(window.innerWidth <= 960) closeSb(); });
+  });
+  if(document.body.getAttribute('data-variant') === 'mobile'){ closeSb(); }
+})();
+
+// ===================== Scrollspy =====================
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#sideNav a[href^="#"]'));
+  var targets = links.map(function(l){ return document.querySelector(l.getAttribute('href')); }).filter(Boolean);
+  function onScroll(){
+    var pos = window.scrollY + 140;
+    var current = null;
+    targets.forEach(function(t){ if(t && t.offsetTop <= pos) current = t; });
+    links.forEach(function(l){ l.classList.remove('active'); });
+    if(current){
+      links.forEach(function(l){
+        if(l.getAttribute('href') === '#' + current.id) l.classList.add('active');
+      });
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+// ===================== Tooltips clicaveis =====================
+(function(){
+  document.querySelectorAll('.term').forEach(function(el){
+    var def = el.getAttribute('data-def');
+    if(!def) return;
+    var popup = document.createElement('span');
+    popup.className = 'term-popup';
+    popup.innerHTML = '<b>' + el.textContent + '</b><br>' + def;
+    el.appendChild(popup);
+    el.addEventListener('click', function(e){
+      e.stopPropagation();
+      var wasOpen = el.classList.contains('open');
+      document.querySelectorAll('.term.open').forEach(function(o){ o.classList.remove('open'); });
+      if(!wasOpen) el.classList.add('open');
+    });
+  });
+  document.addEventListener('click', function(){
+    document.querySelectorAll('.term.open').forEach(function(o){ o.classList.remove('open'); });
+  });
+})();
+
+// ===================== Helper: stepper generico =====================
+function initStepper(containerId, panelId, steps){
+  var container = document.getElementById(containerId);
+  var panel = document.getElementById(panelId);
+  if(!container || !panel) return;
+  var btns = container.querySelectorAll('.step-btn');
+  function render(i){
+    btns.forEach(function(b){ b.classList.remove('active'); });
+    btns[i].classList.add('active');
+    panel.innerHTML = steps[i];
+  }
+  btns.forEach(function(b, i){
+    b.addEventListener('click', function(){ render(i); });
+  });
+  render(0);
+}
+
+// ===================== Modulo 1: Scrum =====================
+initStepper('scrumCycleSteps', 'scrumCyclePanel', [
+  "<b>1. Ordenar o Backlog.</b> O Product Owner organiza o caderno de pedidos (Product Backlog) por prioridade — o que traz mais valor primeiro.",
+  "<b>2. Transformar em valor.</b> O Scrum Team pega uma fatia do backlog e a transforma num Incremento utilizável durante uma Sprint — o turno de cozinha em ação.",
+  "<b>3. Inspecionar e ajustar.</b> O time e os stakeholders provam o resultado e decidem o que muda para a próxima rodada.",
+  "<b>4. Repetir.</b> O ciclo recomeça, sempre puxando o próximo item mais importante do Backlog."
+]);
+
+initStepper('sprintEventsSteps', 'sprintEventsPanel', [
+  "<b>Sprint Planning</b> — evento que abre a Sprint. Responde 3 perguntas: por que essa Sprint importa (Meta da Sprint), o que dá para fazer, e como o time vai fazer. Timebox: até 8h para uma Sprint de 1 mês.",
+  "<b>Daily Scrum</b> — 15 minutos por dia, só para os Developers, para inspecionar o progresso rumo à Meta da Sprint e ajustar o plano do próximo dia.",
+  "<b>Sprint Review</b> — o time mostra o que construiu para os stakeholders e coleta feedback; o Backlog pode ser ajustado a partir disso. Timebox: até 4h para uma Sprint de 1 mês.",
+  "<b>Sprint Retrospective</b> — o time reflete sobre pessoas, processos e ferramentas, e decide as melhorias mais úteis para a próxima Sprint. Timebox: até 3h para uma Sprint de 1 mês."
+]);
+
+initStepper('statikSteps', 'statikPanel', [
+  "<b>1. Identificar fontes de insatisfação.</b> Com o que a equipe e os clientes estão insatisfeitos hoje? Isso motiva a mudança.",
+  "<b>2. Analisar a demanda.</b> O que os clientes pedem, por quais canais, com que padrão? (Gerencie o trabalho, não os trabalhadores.)",
+  "<b>3. Analisar as capacidades do sistema.</b> Quanto da demanda o sistema atual consegue entregar, de que tipo, e quão previsível é isso?",
+  "<b>4. Modelar o fluxo de trabalho.</b> Quais atividades cada tipo de item passa? Isso vira depois as colunas do quadro.",
+  "<b>5. Identificar as classes de serviço.</b> Como itens diferentes (urgente, padrão, etc.) entram e são tratados no sistema?",
+  "<b>6. Desenhar o sistema Kanban.</b> Com tudo isso, o quadro final é montado: colunas, limites de WIP, métricas e políticas."
+]);
+
+var rolesData = {
+  po: "<b>Product Owner</b> — maximiza o valor do produto. Responsável por: desenvolver e comunicar a Meta do Produto, criar e ordenar os itens do Product Backlog, e garantir que ele seja transparente e compreensível. É uma pessoa só, não um comitê — mas pode delegar o trabalho (nunca a responsabilidade).",
+  sm: "<b>Scrum Master</b> — responsável pela eficácia do Scrum Team, ajudando todos a entender e aplicar o Scrum. Serve o time (treinando em autogerenciamento, removendo impedimentos), serve o Product Owner (ajudando com técnicas de backlog) e serve a organização (liderando a adoção do Scrum).",
+  dev: "<b>Developers</b> — pessoas comprometidas em criar o Incremento a cada Sprint. Responsáveis por: criar o plano da Sprint (Sprint Backlog), manter a qualidade seguindo a Definição de Pronto, ajustar o plano diariamente e se responsabilizar mutuamente como profissionais."
+};
+(function(){
+  var tabs = document.getElementById('rolesTabs');
+  var panel = document.getElementById('rolesPanel');
+  if(!tabs) return;
+  var btns = tabs.querySelectorAll('.sim-tab-btn');
+  function render(role){
+    btns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-role') === role); });
+    panel.innerHTML = rolesData[role];
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ render(b.getAttribute('data-role')); }); });
+  render('po');
+})();
+
+// ===================== Modulo 2: Kanban board simulator =====================
+(function(){
+  var boardEl = document.getElementById('kanbanBoard');
+  if(!boardEl) return;
+  var columns = [
+    {id:'pedido', name:'Pedido feito', wip:null, items:[]},
+    {id:'fritando', name:'Fritando', wip:2, items:[]},
+    {id:'montando', name:'Montando prato', wip:3, items:[]},
+    {id:'entregue', name:'Entregue', wip:null, items:[]}
+  ];
+  var counter = 0;
+  var names = ['Risoto','Bife ao ponto','Salada Caesar','Massa ao molho','Peixe grelhado','Sopa do dia','Sobremesa','Burger artesanal','Sushi combo','Frango grelhado'];
+  var msgEl = document.getElementById('kbMsg');
+
+  function render(){
+    boardEl.innerHTML = '';
+    columns.forEach(function(col, ci){
+      var colDiv = document.createElement('div');
+      colDiv.className = 'board-col';
+      var wipLabel = col.wip ? ('<span class="wip-badge' + (col.items.length >= col.wip ? ' full' : '') + '">' + col.items.length + '/' + col.wip + '</span>') : '';
+      colDiv.innerHTML = '<div class="board-col-head"><span>' + col.name + '</span>' + wipLabel + '</div>';
+      if(col.items.length === 0){
+        var empty = document.createElement('div');
+        empty.className = 'board-empty';
+        empty.textContent = 'vazio';
+        colDiv.appendChild(empty);
+      }
+      col.items.forEach(function(item){
+        var cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        cardDiv.textContent = item;
+        if(ci < columns.length - 1){
+          cardDiv.title = 'Clique para puxar para: ' + columns[ci+1].name;
+          cardDiv.addEventListener('click', function(){ moveItem(ci, item); });
+        } else {
+          cardDiv.style.opacity = '.7';
+        }
+        colDiv.appendChild(cardDiv);
+      });
+      boardEl.appendChild(colDiv);
+    });
+  }
+
+  function moveItem(colIndex, item){
+    var nextCol = columns[colIndex+1];
+    if(nextCol.wip !== null && nextCol.items.length >= nextCol.wip){
+      msgEl.textContent = 'Bloqueado: "' + nextCol.name + '" já está no limite de WIP (' + nextCol.wip + '). Puxe algo de lá para a frente primeiro.';
+      return;
+    }
+    var idx = columns[colIndex].items.indexOf(item);
+    columns[colIndex].items.splice(idx, 1);
+    nextCol.items.push(item);
+    msgEl.textContent = '';
+    render();
+  }
+
+  document.getElementById('kbAddBtn').addEventListener('click', function(){
+    counter++;
+    var name = names[(counter-1) % names.length] + ' #' + counter;
+    columns[0].items.push(name);
+    msgEl.textContent = '';
+    render();
+  });
+  document.getElementById('kbResetBtn').addEventListener('click', function(){
+    columns.forEach(function(c){ c.items = []; });
+    counter = 0;
+    msgEl.textContent = '';
+    render();
+  });
+  render();
+})();
+
+// ===================== Modulo 3: pirâmide Azure Boards =====================
+(function(){
+  var el = document.getElementById('azurePyramid');
+  var desc = document.getElementById('azurePyrDesc');
+  if(!el) return;
+  var levels = [
+    {label:'Epic', width:'100%', color:'#5C93FF', ex:'Um Épico é uma grande iniciativa. Exemplo: "Abrir uma nova unidade do restaurante".'},
+    {label:'Feature', width:'80%', color:'#7DA8FF', ex:'Uma Feature entrega valor de negócio dentro do Épico. Exemplo: "Montar o cardápio de sobremesas".'},
+    {label:'User Story', width:'60%', color:'#9EBEFF', ex:'Uma User Story é uma fatia menor, do ponto de vista do cliente. Exemplo: "Como cliente, quero um bolo de chocolate para 100 pessoas".'},
+    {label:'Task', width:'40%', color:'#C2D6FF', ex:'Uma Task é a menor unidade de trabalho. Exemplo: "Comprar chocolate", "Assar a massa", "Fazer a cobertura".'}
+  ];
+  levels.forEach(function(l, i){
+    var div = document.createElement('div');
+    div.className = 'pyr-block';
+    div.style.width = l.width;
+    div.style.background = l.color;
+    div.innerHTML = l.label;
+    div.addEventListener('click', function(){ desc.innerHTML = l.ex; });
+    el.appendChild(div);
+  });
+  desc.innerHTML = levels[0].ex;
+})();
+
+// ===================== Modulo 3: estados de fluxo =====================
+var stateData = {
+  story: {flow:['Novo','Ativo','Resolvido','Fechado'], desc:'User Story: criada em Novo pelo PO → Ativo quando o time decide trabalhar nela na Sprint → Resolvido quando tarefas e testes de unidade terminam → Fechado quando o PO confirma que os Critérios de Aceitação foram cumpridos.'},
+  bug: {flow:['Novo','Ativo','Resolvido','Fechado'], desc:'Bug: criado em Novo → Aprovado leva a Ativo → Corrigido leva a Resolvido → Verificado leva a Fechado. Se não corrigido ou reaberto por regressão, volta para Ativo.'},
+  task: {flow:['Novo','Ativo','Fechado'], desc:'Task: criada em Novo → Trabalho iniciado leva a Ativo → Concluído leva a Fechado. Pode ser reaberta (Reconsiderando a tarefa) a qualquer momento.'}
+};
+(function(){
+  var tabs = document.getElementById('stateTabs');
+  var flow = document.getElementById('stateFlow');
+  var panel = document.getElementById('statePanel');
+  if(!tabs) return;
+  var btns = tabs.querySelectorAll('.sim-tab-btn');
+  function render(wit){
+    btns.forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-wit') === wit); });
+    var d = stateData[wit];
+    flow.innerHTML = '';
+    d.flow.forEach(function(s, i){
+      var node = document.createElement('span');
+      node.className = 'state-node' + (i===0 ? ' active' : '');
+      node.textContent = s;
+      flow.appendChild(node);
+      if(i < d.flow.length - 1){
+        var arrow = document.createElement('span');
+        arrow.className = 'state-arrow';
+        arrow.innerHTML = '&#8594;';
+        flow.appendChild(arrow);
+      }
+    });
+    panel.innerHTML = d.desc;
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ render(b.getAttribute('data-wit')); }); });
+  render('story');
+})();
+
+// ===================== Modulo 4: pirâmide SAFe =====================
+(function(){
+  var el = document.getElementById('safePyramid');
+  var desc = document.getElementById('safePyrDesc');
+  if(!el) return;
+  var levels = [
+    {label:'Portfólio SAFe', width:'100%', color:'#A585E8', ex:'O nível mais alto: a rede de restaurantes inteira, com estratégia, orçamento e governança comuns.'},
+    {label:'Large Solution SAFe', width:'80%', color:'#B79BEE', ex:'Para soluções muito grandes que exigem coordenar vários ARTs e fornecedores — como uma cozinha central que abastece várias unidades.'},
+    {label:'Essential SAFe (ART)', width:'60%', color:'#CBB6F2', ex:'O nível básico: um Agile Release Train, um "trem" de vários times ágeis entregando junto — uma unidade completa do restaurante.'},
+    {label:'Time Ágil', width:'40%', color:'#DFD1F7', ex:'A base de tudo: um único time Scrum ou Kanban, exatamente como nos Módulos 1 e 2 — uma cozinha só.'}
+  ];
+  levels.forEach(function(l){
+    var div = document.createElement('div');
+    div.className = 'pyr-block';
+    div.style.width = l.width;
+    div.style.background = l.color;
+    div.innerHTML = l.label;
+    div.addEventListener('click', function(){ desc.innerHTML = l.ex; });
+    el.appendChild(div);
+  });
+  desc.innerHTML = levels[0].ex;
+})();
+
+// ===================== Modulo 4: timeline do PI =====================
+(function(){
+  var el = document.getElementById('piTimeline');
+  var desc = document.getElementById('piDesc');
+  if(!el) return;
+  var events = [
+    {label:'Pre-Plan', ex:'Planejamento Prévio: os ARTs de um Solution Train se preparam e se alinham antes do PI Planning.'},
+    {label:'PI Planning', ex:'Evento presencial (ou remoto) de todo o ART: todos os times se alinham numa visão e metas compartilhadas para o próximo PI.'},
+    {label:'Iterações', ex:'O PI é dividido em iterações (parecidas com Sprints) onde cada time entrega valor incremental.'},
+    {label:'Iteração IP', ex:'A última iteração do PI é especial: serve de buffer para estimativas, inovação, aprendizado contínuo e preparação do próximo PI Planning.'},
+    {label:'System/Solution Demo', ex:'Demonstração integrada de tudo que foi entregue no PI, reunindo o trabalho de vários times/ARTs.'},
+    {label:'Inspect & Adapt', ex:'Evento de fechamento do PI: o estado atual da solução é avaliado e o time identifica melhorias via workshop estruturado.'}
+  ];
+  events.forEach(function(ev, i){
+    var item = document.createElement('div');
+    item.className = 'tl-item' + (i===0 ? ' active' : '');
+    item.innerHTML = '<div class="tl-dot"></div><div class="tl-label">' + ev.label + '</div>';
+    item.addEventListener('click', function(){
+      el.querySelectorAll('.tl-item').forEach(function(n){ n.classList.remove('active'); });
+      item.classList.add('active');
+      desc.innerHTML = ev.ex;
+    });
+    el.appendChild(item);
+  });
+  desc.innerHTML = events[0].ex;
+})();
+
+// ===================== Modulo 4: calculadora WSJF =====================
+(function(){
+  var cod = document.getElementById('wsjfCod');
+  var size = document.getElementById('wsjfSize');
+  if(!cod) return;
+  var codVal = document.getElementById('wsjfCodVal');
+  var sizeVal = document.getElementById('wsjfSizeVal');
+  var result = document.getElementById('wsjfResult');
+  var msg = document.getElementById('wsjfMsg');
+  function calc(){
+    var c = parseInt(cod.value, 10);
+    var s = parseInt(size.value, 10);
+    codVal.textContent = c;
+    sizeVal.textContent = s;
+    var wsjf = c / s;
+    result.textContent = wsjf.toFixed(1);
+    var texto = 'Este item tem prioridade <b>' + (wsjf > 3 ? 'ALTA' : wsjf > 1 ? 'média' : 'baixa') + '</b>. ';
+    texto += 'Na prática: dois pratos podem ter o mesmo "custo de esperar", mas se um leva 5 minutos para preparar e o outro leva 40, o mais rápido sobe no WSJF — porque libera valor mais cedo para mais gente.';
+    msg.innerHTML = texto;
+  }
+  cod.addEventListener('input', calc);
+  size.addEventListener('input', calc);
+  calc();
+})();
+
+// ===================== Modulo 4: glossario SAFe pesquisavel =====================
+(function(){
+  var grid = document.getElementById('safeGlossGrid');
+  if(!grid) return;
+  var terms = SAFE_TERMS_DATA;
+  var search = document.getElementById('safeSearch');
+  var lettersEl = document.getElementById('safeLetters');
+  var countEl = document.getElementById('safeCount');
+  var activeLetter = null;
+
+  var letters = Array.from(new Set(terms.map(function(t){ return t[0][0].toUpperCase(); }))).sort();
+  letters.forEach(function(L){
+    var b = document.createElement('button');
+    b.className = 'letter-btn';
+    b.textContent = L;
+    b.addEventListener('click', function(){
+      activeLetter = (activeLetter === L) ? null : L;
+      renderLetters();
+      render();
+    });
+    lettersEl.appendChild(b);
+  });
+  function renderLetters(){
+    Array.prototype.forEach.call(lettersEl.children, function(b){
+      b.classList.toggle('active', b.textContent === activeLetter);
+    });
+  }
+
+  function render(){
+    var q = (search.value || '').toLowerCase();
+    var filtered = terms.filter(function(t){
+      var matchQ = !q || t[0].toLowerCase().indexOf(q) > -1 || t[1].toLowerCase().indexOf(q) > -1;
+      var matchL = !activeLetter || t[0][0].toUpperCase() === activeLetter;
+      return matchQ && matchL;
+    });
+    countEl.textContent = filtered.length + ' de ' + terms.length + ' termos';
+    grid.innerHTML = '';
+    filtered.forEach(function(t){
+      var div = document.createElement('div');
+      div.className = 'gloss-item';
+      div.innerHTML = '<b>' + t[0] + '</b><p>' + t[1] + '</p>';
+      grid.appendChild(div);
+    });
+  }
+  search.addEventListener('input', render);
+  render();
+})();
+
+// ===================== Glossario geral auto-gerado =====================
+(function(){
+  var grid = document.getElementById('genGlossGrid');
+  if(!grid) return;
+  var seen = {};
+  var items = [];
+  document.querySelectorAll('.term[data-def]').forEach(function(el){
+    var term = el.childNodes[0] ? el.childNodes[0].textContent.trim() : el.textContent.trim();
+    var def = el.getAttribute('data-def');
+    var key = term.toLowerCase();
+    if(!seen[key]){
+      seen[key] = true;
+      items.push([term, def]);
+    }
+  });
+  items.sort(function(a,b){ return a[0].localeCompare(b[0], 'pt-BR'); });
+
+  var search = document.getElementById('genSearch');
+  var countEl = document.getElementById('genCount');
+  function render(){
+    var q = (search.value || '').toLowerCase();
+    var filtered = items.filter(function(t){
+      return !q || t[0].toLowerCase().indexOf(q) > -1 || t[1].toLowerCase().indexOf(q) > -1;
+    });
+    countEl.textContent = filtered.length + ' de ' + items.length + ' termos';
+    grid.innerHTML = '';
+    filtered.forEach(function(t){
+      var div = document.createElement('div');
+      div.className = 'gloss-item';
+      div.innerHTML = '<b>' + t[0] + '</b><p>' + t[1] + '</p>';
+      grid.appendChild(div);
+    });
+  }
+  search.addEventListener('input', render);
+  render();
+})();
+
+</script>
+</body></html>
